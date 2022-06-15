@@ -1,0 +1,46 @@
+.file{
+    position: absolute;
+    bottom: 0;
+    outline: none;
+    color: transparent;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: 0.5s;
+  
+    font-size: 10px;
+  }
+  .file::-webkit-file-upload-button{
+    visibility: hidden;
+  }
+  input[type="file"]{
+    display: none;
+  
+  
+  }
+  .uploadIcon{
+    height: 25px;
+    width: 25px ;
+    z-index: 1000;
+    margin-right: -110px;
+    margin-top: 90px;
+    cursor: pointer;
+  }
+  .example-radio-group {
+    display: flex;
+    flex-direction: row;
+    margin: 18px 0;
+    align-items: flex-start;
+  }
+  
+  .example-radio-button {
+    margin: 8px;
+  }
+  table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 100%;
+  }

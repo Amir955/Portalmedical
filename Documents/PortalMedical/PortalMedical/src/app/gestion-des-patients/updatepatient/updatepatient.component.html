@@ -1,0 +1,101 @@
+<h2 mat-dialog-title  > Mettre à jour le profile de {{user.nom}} {{user.prenom}} </h2>
+<mat-dialog-content>
+
+      
+  <div class="row">
+    <mat-form-field class="col-6" appearance="fill">
+        <mat-label>Prenom</mat-label>
+        <input matInput maxlength="10" [(ngModel)]="user.prenom" placeholder="prenom ">
+    </mat-form-field>
+    <mat-form-field class="col-6" appearance="fill">
+        <mat-label>Nom</mat-label>
+        <input matInput [(ngModel)]="user.nom" maxlength="10" placeholder="nom">
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="col-6" appearance="fill">
+        <mat-label>email</mat-label>
+        <input matInput placeholder="pat@example.com" [(ngModel)]="user.email" [formControl]="email" required>
+    </mat-form-field>
+    <mat-radio-group class="col-6"  [(ngModel)]="user.sexe"  aria-label="Select an option">
+        <mat-label>Sexe</mat-label>
+<br>
+        <mat-radio-button value="Homme" style="color:blue;">Homme</mat-radio-button>
+        <mat-radio-button value="Femme" style="color:palevioletred;">Femme</mat-radio-button>
+      </mat-radio-group>
+</div>
+
+<div class="row">
+
+
+  <mat-form-field class="col-6" appearance="fill">
+      <mat-label>Date de naissance</mat-label>
+      <input matInput [(ngModel)]="user.age"[matDatepicker]="picker">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-6" appearance="fill">
+      <mat-label>Cin</mat-label>
+      <input matInput maxlength="8" [(ngModel)]="user.cin" placeholder="Cin ">
+  </mat-form-field>
+</div>
+<div class="row">
+  <mat-form-field class="col-6" appearance="fill">
+      <mat-label>Pays</mat-label>
+      <input matInput [(ngModel)]="user.pays" maxlength="10" placeholder="Pays">
+  </mat-form-field>
+  <mat-form-field class="col-6" appearance="fill">
+    <mat-label>Gouvernerat</mat-label>
+    <mat-select   [(ngModel)]="user.gouvernerat" placeholder="Gouvernerat" required>
+      <mat-option disabled > SelectRole</mat-option>
+      <mat-option value="Ariana" selected="Ariana">Ariana</mat-option>
+      <mat-option value="Béja"> Béja</mat-option>
+      <mat-option value="BenArous"> BenArous</mat-option>
+      <mat-option value="Bizerte"> Bizerte</mat-option>
+      <mat-option value="Gabès"> Gabès</mat-option>
+      <mat-option value="Gafsa"> Gafsa</mat-option>
+      <mat-option value="Jendouba"> Jendouba</mat-option>
+      <mat-option value="Kairouan"> Kairouan</mat-option>
+      <mat-option value="Kasserine"> Kasserine</mat-option>
+      <mat-option value="Kébili"> Kébili</mat-option>
+      <mat-option value="Kef"> Kef</mat-option>
+      <mat-option value="Mahdia"> Mahdia</mat-option>
+      <mat-option value="Manouba"> Manouba</mat-option>
+      <mat-option value="Médenine"> Médenine</mat-option>
+      <mat-option value="Monastir"> Monastir</mat-option>
+      <mat-option value="Nabeul"> Nabeul</mat-option>
+      <mat-option value="Sfax"> Sfax</mat-option>
+      <mat-option value="SidiBouzid"> SidiBouzid</mat-option>
+      <mat-option value="Siliana"> Siliana</mat-option>
+      <mat-option value="Sousse"> Sousse</mat-option>
+      <mat-option value="Tataouine"> Tataouine</mat-option>
+      <mat-option value="Tozeur"> Tozeur</mat-option>
+      <mat-option value="Tunis"> Tunis</mat-option>
+      <mat-option value="Zaghouan"> Zaghouan</mat-option>
+    </mat-select>
+</mat-form-field>
+</div>
+<div class="row">
+  <mat-form-field class="col-6" appearance="fill">
+      <mat-label>Code postal</mat-label>
+      <input matInput [(ngModel)]="user.codepostal" maxlength="4" placeholder="codepostal">
+  </mat-form-field>
+  <mat-form-field class="col-6" appearance="fill">
+      <mat-label>Ville</mat-label>
+      <input matInput maxlength="15" [(ngModel)]="user.ville" placeholder="Ville ">
+  </mat-form-field>
+</div>
+<div class="row">
+<mat-form-field class="col-6" appearance="fill">
+  <mat-label>NumTelephone</mat-label>
+  <input matInput maxlength="8" [(ngModel)]="user.numtelephone" placeholder="numtelephone ">
+</mat-form-field>
+</div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Fermer</button>
+    <button mat-button [mat-dialog-close]="close" (click)="updateUser()" cdkFocusInitial>Mise à jour</button>
+  </mat-dialog-actions>

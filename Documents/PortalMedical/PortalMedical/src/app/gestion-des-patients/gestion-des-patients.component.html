@@ -1,0 +1,73 @@
+<button mat-icon-button color="warn"    matTooltip="addUser" matTooltipPosition="right" (click)="add()" ><mat-icon>person_add</mat-icon>Ajouter nouveau patient</button>
+
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <h3 class="breadcrumb-item active mt-2" aria-current="page">Tableau des Patients</h3>
+    </ol>
+  </nav>
+  <mat-form-field appearance="standard">
+    <mat-label>Rechercher Patient </mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Filter" #input>
+  </mat-form-field>
+  
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <caption></caption>
+      <!-- ID Column -->
+      
+      <ng-container matColumnDef="email">
+        <th mat-header-cell id="email" *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell  id="nom" *matHeaderCellDef mat-sort-header>nom</th>
+        <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell id="prenom" *matHeaderCellDef mat-sort-header>prenom</th>
+        <td mat-cell *matCellDef="let element"> {{element.prenom}} </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="sexe">
+        <th mat-header-cell  id="sexe" *matHeaderCellDef mat-sort-header>sexe</th>
+        <td mat-cell *matCellDef="let element"> {{element.sexe}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="age">
+        <th mat-header-cell id="age" *matHeaderCellDef mat-sort-header>Date de naissance</th>
+        <td mat-cell *matCellDef="let element"> {{element.age}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="creation_date">
+        <th mat-header-cell id="date" *matHeaderCellDef mat-sort-header>Date de creattion</th>
+        <td mat-cell *matCellDef="let element"> {{element.creationDate| date}} </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="numtelephone">
+        <th mat-header-cell id="numtelephone" *matHeaderCellDef mat-sort-header>NumTelephone</th>
+        <td mat-cell *matCellDef="let element"> {{element.numtelephone}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="Actions">
+        <th mat-header-cell id="Action" *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button    matTooltip="Edit user"   matTooltipPosition="left" (click)="onEdit(row)"><mat-icon>update</mat-icon></button>
+          <button mat-icon-button color="warn"    matTooltip="delete user" matTooltipPosition="right" (click)="deleteUser(row.id)"><mat-icon>delete_outline</mat-icon></button>
+  
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">'No data matching the filter' | "{{input.value}}"</td>
+      </tr>
+    </table>
+  
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+  </div>
+  

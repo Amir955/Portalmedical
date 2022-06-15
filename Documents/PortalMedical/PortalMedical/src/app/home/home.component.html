@@ -1,0 +1,50 @@
+  <div class="bg-light full-height pt-5 h-100">
+    <div class="container  ">
+      <div class="row">
+      
+        <div class="col-md-4 contents">
+          <div class="row justify-content-center">
+            <img src="../../assets/img/PortlMedical.png" alt="logo" class="img-fluid ">
+            <div class="col-md-12 justify-content-center">
+              <div class="mb-4 ">
+                <h1 class="text-center">S'identifier</h1>
+              </div>
+              <form [formGroup]="loginForm"  >
+                <div class="example-container">
+                  <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>Entrer votre email</mat-label>
+                    <input matInput placeholder="pat@example.com" [formControl]="email" required>
+                    <mat-error *ngIf="email.invalid">{{getErrorEmailMessage()}}</mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="example-container">
+                  <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>Entrer votre mot de passe</mat-label>
+                    <input matInput [type]="hide ? 'password' : 'text'"placeholder="password" [formControl]="password" required>
+                    <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    <mat-error *ngIf="password.invalid">{{getErrorPasswordMessage()}}</mat-error>
+                  </mat-form-field>
+                </div>
+  
+                <div class="row justify-content-center">
+                  <button   mat-raised-button color="primary"  [disabled]="!loginForm.valid" (click)="signIn()" class="w-75  " > S'identifier </button>
+                                          
+                    <button mat-raised-button color="primary" class="text-center mt-2"(click)="openDialog2()">Enregistrer</button>
+    
+                  
+                </div>
+                
+                <div class="row ">
+                  <span class="text-center mt-2" ><a class="password" (click)="openDialog()">Mot de Passe oublié ?</a></span>
+  
+                </div>
+                
+              </form>
+            </div>
+          </div>
+  
+        </div>
+  
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,103 @@
+<mat-sidenav-container>
+    <mat-sidenav #sidenav opened mode="side" class="shadow  ">
+        <span class="w-100">
+           <div class="macouleur"><b>PortlMedical</b></div>
+
+        </span>
+        <div class="nav-link text-center  ">
+            <img [src]="retrievedImage" (error)="onError()" class="rounded-circle  mt-0 " height="70" width="70" alt="image">
+            <p class="name mt-2">{{user?.nom}} {{user?.prenom}}</p>
+            <p class=" designation mt-2">{{user?.role}}</p>
+        </div>
+        <ul class="nav">
+            <li class="nav-item text-center">
+                <button mat-button class="menu-button" #button1 routerLink="/pageadmin/calendrier">
+                    <mat-icon>calendar_today</mat-icon>
+                    <span> <a class="dashboard" (click)="redirectDashboard()">Calendrier</a></span>
+
+                </button>
+            </li>
+            <li class="nav-item">
+                <mat-accordion >
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false"
+                        class="panel">
+                        <mat-expansion-panel-header class="menu-button  ">
+
+                            <mat-icon>note_add</mat-icon>
+
+                            <span>Consultation </span>
+
+                        </mat-expansion-panel-header>
+            <li class="nav-item text-center">
+                <button mat-button class="menu-button" routerLink="/pageadmin/fichespatients">
+                    <mat-icon>description</mat-icon>
+                    <span> <a class="tools" (click)="redirectTools()">Fiches patients</a></span>
+                </button>
+            </li>
+            <li class="nav-item text-center">
+                <button mat-button class="menu-button  " routerLink="/pageadmin/ordonnances">
+                    <mat-icon>receipt</mat-icon>
+                    <span> <a class="tools" (click)="redirectLogs()">ordonnances et certificats de maladies</a></span>
+                </button>
+            </li>
+            </mat-expansion-panel>
+            </mat-accordion>
+            </li>
+            <li class="nav-item text-center">
+                <button mat-button class="menu-button  " #button1 routerLink="/pageadmin/gestiondespatients">
+                    <mat-icon>account_box</mat-icon>
+                    <span> <a class="faq" (click)="redirectFaq()">Gestion des patients</a></span>
+                </button>
+            </li>
+
+            <li class="nav-item text-center">
+                <button mat-button class="menu-button  " #button1 routerLink="/pageadmin/Statistiques">
+                    <mat-icon>show_chart</mat-icon>
+                    <span> <a class="stats" (click)="redirectStats()">Statistiques</a></span>
+                </button>
+            </li>
+
+        
+
+        </ul>
+
+ 
+    </mat-sidenav>
+    <mat-sidenav-content class=" bg-light">
+        <mat-toolbar>
+            <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+                <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+            </button>
+            <span class="example-spacer"></span>
+            <div class="col-2"> 
+             </div>
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon favorite-icon"
+                aria-label="Example icon-button with heart icon">
+                <img [src]="retrievedImage" (error)="onError()" class="rounded-circle  " height="28" width="28" alt="image">
+            </button>
+            <mat-menu #menu="matMenu">
+
+                <span mat-menu-item class="text-center">
+                    <p class="name">{{user?.nom}} {{user?.prenom}}</p>
+                    <p class="designation">Member since {{user?.creationDate|date}} </p>
+              
+                  </span>
+
+                <hr>
+                    <button mat-menu-item (click)="logout()">
+                        <mat-icon>logout</mat-icon>
+                        <span>Se déconnecter</span>
+                    </button>
+            </mat-menu>
+        </mat-toolbar>
+
+        <div>
+            <div class="container mb-5 mt-5 ">
+                <router-outlet></router-outlet>
+
+            </div>
+        </div>
+
+
+    </mat-sidenav-content>
+</mat-sidenav-container>

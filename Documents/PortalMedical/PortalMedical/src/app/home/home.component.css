@@ -1,0 +1,10 @@
+html, body {
+    height: 100%;
+    font-family: "Helvetica Neue";
+  }
+  
+   .password{
+      cursor: pointer;
+      text-decoration: underline;
+      color: #005eff;
+    }
