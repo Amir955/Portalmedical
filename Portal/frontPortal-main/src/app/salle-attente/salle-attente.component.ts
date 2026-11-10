@@ -34,7 +34,7 @@ export class SalleAttenteComponent implements OnInit, OnDestroy {
   montant: number | null = null;
   mode: ModePaiement = 'especes';
   note = '';
-  openReceipt = true;
+  openReceipt = false;
   paying = false;
   payError = '';
   private tarif: number | null = null;
@@ -153,6 +153,7 @@ export class SalleAttenteComponent implements OnInit, OnDestroy {
     this.montant = existing ? existing.montant : this.tarif;
     this.mode = existing ? existing.mode : 'especes';
     this.note = existing && existing.note ? existing.note : '';
+    this.openReceipt = false;
     this.payError = '';
     this.paying = false;
   }
