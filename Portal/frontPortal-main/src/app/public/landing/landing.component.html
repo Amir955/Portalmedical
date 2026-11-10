@@ -1,0 +1,18 @@
+<div class="landing-page">
+  <div class="landing-bg" aria-hidden="true">
+    <span class="landing-bg__blob landing-bg__blob--one"></span>
+    <span class="landing-bg__blob landing-bg__blob--two"></span>
+    <span class="landing-bg__blob landing-bg__blob--three"></span>
+  </div>
+  <app-landing-header></app-landing-header>
+
+  <main class="landing-content">
+    <app-landing-hero [doctors]="doctors"></app-landing-hero>
+    <app-landing-how-it-works></app-landing-how-it-works>
+    <app-landing-doctors [doctors]="doctors"></app-landing-doctors>
+    <app-landing-pro></app-landing-pro>
+    <app-landing-faq></app-landing-faq>
+  </main>
+
+  <app-landing-footer></app-landing-footer>
+</div>

@@ -1,0 +1,14 @@
+<section class="faq" id="faq">
+  <header class="faq__head" lpReveal>
+    <p class="lp-eyebrow">Questions fréquentes</p>
+    <h2 class="lp-section-title">Vous avez une question ?</h2>
+  </header>
+  <div class="faq__list">
+    <div class="faq__item" *ngFor="let item of items; let i = index" [class.is-open]="open === i" lpReveal [lpRevealDelay]="i * 70">
+      <button type="button" class="faq__question" [attr.aria-expanded]="open === i" (click)="toggle(i)">
+        <span>{{ item.question }}</span><mat-icon aria-hidden="true">expand_more</mat-icon>
+      </button>
+      <p class="faq__answer" *ngIf="open === i">{{ item.answer }}</p>
+    </div>
+  </div>
+</section>

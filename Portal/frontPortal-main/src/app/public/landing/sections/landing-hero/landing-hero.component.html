@@ -1,0 +1,65 @@
+<section class="hero">
+  <div class="hero__copy">
+    <p class="lp-eyebrow hero__in" style="--d: 0ms">Prise de rendez-vous en ligne</p>
+    <h1 class="hero__in" style="--d: 120ms">Votre médecin, <span class="hero__highlight">en quelques clics</span></h1>
+    <p class="hero__description hero__in" style="--d: 260ms">
+      Trouvez un médecin, choisissez un créneau libre et recevez la confirmation par e-mail.
+      Sans compte, sans attente au téléphone.
+    </p>
+
+    <div class="hero__actions hero__in" style="--d: 380ms">
+      <a class="lp-btn lp-btn--primary" [routerLink]="['/prendre-rendez-vous']">
+        <mat-icon aria-hidden="true">event_available</mat-icon>Prendre rendez-vous
+      </a>
+      <button type="button" class="lp-btn lp-btn--secondary" (click)="scrollTo('comment')">
+        Comment ça marche<mat-icon aria-hidden="true">south</mat-icon>
+      </button>
+    </div>
+
+    <ul class="hero__trust hero__in" style="--d: 500ms">
+      <li><mat-icon aria-hidden="true">no_accounts</mat-icon>Aucun compte à créer</li>
+      <li><mat-icon aria-hidden="true">lock</mat-icon>Données protégées</li>
+      <li><mat-icon aria-hidden="true">event_busy</mat-icon>Annulation en un clic</li>
+    </ul>
+  </div>
+
+  <form class="search hero__card" (ngSubmit)="search()">
+    <span class="search__badge" aria-hidden="true"><i></i>Créneaux en temps réel</span>
+    <p class="lp-eyebrow">Trouver un médecin</p>
+    <h2>Qui souhaitez-vous consulter ?</h2>
+
+    <label class="search__field">
+      <span>Nom du médecin</span>
+      <span class="search__control">
+        <mat-icon aria-hidden="true">search</mat-icon>
+        <input type="text" name="q" [(ngModel)]="query" placeholder="Ex. Dr Ben Salem" autocomplete="off">
+      </span>
+    </label>
+
+    <label class="search__field">
+      <span>Spécialité</span>
+      <span class="search__control">
+        <mat-icon aria-hidden="true">medical_services</mat-icon>
+        <select name="specialite" [(ngModel)]="specialite">
+          <option value="">Toutes les spécialités</option>
+          <option *ngFor="let s of specialites" [value]="s">{{ s }}</option>
+        </select>
+      </span>
+    </label>
+
+    <label class="search__field">
+      <span>Ville</span>
+      <span class="search__control">
+        <mat-icon aria-hidden="true">place</mat-icon>
+        <select name="ville" [(ngModel)]="ville">
+          <option value="">Toutes les villes</option>
+          <option *ngFor="let v of villes" [value]="v">{{ v }}</option>
+        </select>
+      </span>
+    </label>
+
+    <button type="submit" class="lp-btn lp-btn--primary search__submit">
+      <mat-icon aria-hidden="true">search</mat-icon>Rechercher
+    </button>
+  </form>
+</section>

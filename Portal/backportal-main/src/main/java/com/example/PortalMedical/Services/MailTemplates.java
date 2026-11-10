@@ -177,7 +177,7 @@ public final class MailTemplates {
                 + paragraph("<strong>" + esc(who) + "</strong> a annulé son rendez-vous depuis le lien reçu par e-mail.")
                 + detailsCard(day, time, null, "Annulé par le patient", DANGER)
                 + paragraph("Le créneau est de nouveau disponible pour une autre demande.")
-                + button("Ouvrir le calendrier", APP_URL + "/calender", ACCENT_STRONG);
+                + button("Ouvrir le calendrier", APP_URL + "/agenda", ACCENT_STRONG);
 
         String html = layout(who + " a annulé son rendez-vous du " + day + " à " + time + ".",
                 "info", "Rendez-vous annulé", body);
@@ -194,7 +194,7 @@ public final class MailTemplates {
     public static Mail appointmentRefused(String patientPrenom, Date date, String doctor, String doctorPhone) {
         String day = formatDay(date);
         String time = formatTime(date);
-        String requestLink = APP_URL + "/demandeRDV";
+        String requestLink = APP_URL + "/prendre-rendez-vous";
         String subject = "Votre demande de rendez-vous du " + day + " n'a pas pu être retenue";
 
         String body = paragraph(greeting(patientPrenom, true))

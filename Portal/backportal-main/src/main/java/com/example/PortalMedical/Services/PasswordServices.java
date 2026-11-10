@@ -28,7 +28,7 @@ public class PasswordServices {
 
     /** Lifetime of the reset link, kept in line with JwtUtil's reset token. */
     private static final int RESET_LINK_MINUTES = 30;
-    private static final String RESET_URL = MailTemplates.APP_URL + "/resetPassword/";
+    private static final String RESET_URL = MailTemplates.APP_URL + "/reinitialiser-mot-de-passe/";
     private static final String SENDER_NAME = "PortalMedical";
     /** Lifetime of the link a new secretary receives to choose her password. */
     private static final int INVITATION_DAYS = 7;
