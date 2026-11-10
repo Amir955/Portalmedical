@@ -1,0 +1,253 @@
+:host {
+  display: block;
+}
+
+.st-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.st-head h1 {
+  margin: 0;
+  color: var(--portal-primary);
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.st-sub {
+  margin: 0.3rem 0 0;
+  color: var(--portal-muted);
+}
+
+.st-range {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--portal-border);
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.st-range button {
+  min-height: 32px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--portal-primary);
+  font-size: var(--portal-text-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.st-range button.is-active {
+  background: var(--portal-primary);
+  color: #ffffff;
+}
+
+.st-state {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  color: var(--portal-muted);
+}
+
+.is-loading {
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.st-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.st-kpi {
+  display: grid;
+  gap: 0.15rem;
+  padding: 1rem 1.1rem;
+}
+
+.st-kpi .mat-icon {
+  margin-bottom: 0.3rem;
+  color: var(--portal-accent-strong);
+}
+
+.st-kpi span {
+  color: var(--portal-muted);
+  font-size: var(--portal-text-sm);
+  font-weight: 700;
+}
+
+.st-kpi strong {
+  color: var(--portal-primary);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.st-kpi em {
+  color: var(--portal-muted);
+  font-size: var(--portal-text-xs);
+  font-style: normal;
+}
+
+.st-kpi--money {
+  background: var(--portal-primary);
+}
+
+.st-kpi--money .mat-icon,
+.st-kpi--money strong {
+  color: #ffffff;
+}
+
+.st-kpi--money span,
+.st-kpi--money em {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.st-charts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.st-chart {
+  padding: 1rem 1.1rem;
+}
+
+.st-chart h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  color: var(--portal-primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.st-chart h2 .mat-icon {
+  color: var(--portal-muted);
+}
+
+.st-bars {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 6), minmax(0, 1fr));
+  gap: 0.35rem;
+  align-items: end;
+}
+
+.st-bar {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.st-bar__value {
+  color: var(--portal-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.st-bar__track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 34px;
+  height: 140px;
+  border-radius: 8px;
+  background: #f1f4f8;
+}
+
+.st-bar__track i {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  background: var(--portal-primary);
+  transition: height 0.3s ease;
+}
+
+.st-chart--money .st-bar__track i {
+  background: var(--portal-accent);
+}
+
+.st-bar:hover .st-bar__track i {
+  filter: brightness(1.15);
+}
+
+.st-bar__label {
+  overflow: hidden;
+  max-width: 100%;
+  color: var(--portal-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-table {
+  padding: 0;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--portal-border);
+  color: var(--portal-muted);
+  font-size: var(--portal-text-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #eef2f6;
+  color: var(--portal-text);
+  font-size: var(--portal-text-sm);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.st-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.st-month {
+  color: var(--portal-primary);
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+td strong {
+  color: var(--portal-primary);
+}
+
+@media (max-width: 1100px) {
+  .st-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .st-charts {
+    grid-template-columns: 1fr;
+  }
+}

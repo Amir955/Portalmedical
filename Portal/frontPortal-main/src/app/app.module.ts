@@ -64,6 +64,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AnnulationComponent } from './annulation/annulation.component';
 import { PatientFileComponent } from './patient-file/patient-file.component';
+import { SalleAttenteComponent } from './salle-attente/salle-attente.component';
+import { CaisseComponent } from './caisse/caisse.component';
+import { StatsCabinetComponent } from './stats-cabinet/stats-cabinet.component';
 
 registerLocaleData(localeFr);
 
@@ -103,7 +106,10 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     ProfileComponent,
     DashboardComponent,
     AnnulationComponent,
-    PatientFileComponent
+    PatientFileComponent,
+    SalleAttenteComponent,
+    CaisseComponent,
+    StatsCabinetComponent
 
   ],
   imports: [

@@ -61,7 +61,10 @@
       <mat-label>Choisir le patient</mat-label>
       <mat-select formControlName="patientId">
         <mat-option *ngFor="let patient of patients" [value]="patient.id">
-          {{ patient.nom }} {{ patient.prenom }}<span class="cal-option-hint" *ngIf="patient.email"> · {{ patient.email }}</span>
+          <ng-container *ngIf="patient.nom || patient.prenom; else emailOnly">
+            {{ patient.nom }} {{ patient.prenom }}<span class="cal-option-hint" *ngIf="patient.email"> · {{ patient.email }}</span>
+          </ng-container>
+          <ng-template #emailOnly>{{ patient.email || 'Patient sans nom' }}</ng-template>
         </mat-option>
       </mat-select>
       <mat-hint *ngIf="!patients.length">Aucun patient pour le moment : utilisez « Nouveau patient ».</mat-hint>

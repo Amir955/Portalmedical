@@ -39,6 +39,11 @@ export class RendezVousService {
     return this.http.get<string[]>(this.url + 'creneauxPris/' + medecinId, { params: { date } });
   }
 
+  /** Waiting room: arrive, en_consultation, termine, absent, or 'prevu' to reset. */
+  setStatut(id: number, statut: string): Observable<RendezVousEntity> {
+    return this.http.put<RendezVousEntity>(this.url + id + '/statut', { statut });
+  }
+
   /** Confirmed appointments for the calendar, same scope as getDemandes. */
   getAgenda(): Observable<RendezVousEntity[]> {
     return this.http.get<RendezVousEntity[]>(this.url + 'agenda');

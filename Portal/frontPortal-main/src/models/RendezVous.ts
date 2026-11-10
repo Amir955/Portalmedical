@@ -19,5 +19,8 @@ export class RendezVousEntity{
   patientTelephone?: string;
   /** yyyy-MM-dd when sent, ISO date when read back. */
   patientDateNaissance?: string;
+  /** Day-of-visit status: null (planned), arrive, en_consultation, termine, absent. */
+  statutVisite?: 'arrive' | 'en_consultation' | 'termine' | 'absent' | null;
+  heureArrivee?: string | null;
 
 }

@@ -1,0 +1,95 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <header class="st-head">
+      <div>
+        <h1>Statistiques</h1>
+        <p class="st-sub">L’activité du cabinet mois par mois.</p>
+      </div>
+      <div class="st-range" role="tablist" aria-label="Période">
+        <button type="button" role="tab" [class.is-active]="mois === 6" [attr.aria-selected]="mois === 6" (click)="setMois(6)">6 mois</button>
+        <button type="button" role="tab" [class.is-active]="mois === 12" [attr.aria-selected]="mois === 12" (click)="setMois(12)">12 mois</button>
+      </div>
+    </header>
+
+    <div class="portal-card st-state" *ngIf="failed">
+      <mat-icon>cloud_off</mat-icon>Les statistiques n’ont pas pu être chargées.
+      <button type="button" class="pm-btn pm-btn--secondary" (click)="load()">Réessayer</button>
+    </div>
+
+    <ng-container *ngIf="stats && !failed">
+      <div class="st-kpis" [class.is-loading]="loading">
+        <div class="portal-card st-kpi">
+          <mat-icon>event</mat-icon>
+          <span>Rendez-vous</span>
+          <strong>{{ stats.totaux.rendezVous }}</strong>
+          <em>{{ stats.totaux.honores }} honorés</em>
+        </div>
+        <div class="portal-card st-kpi">
+          <mat-icon>person_off</mat-icon>
+          <span>Taux d’absence</span>
+          <strong>{{ percent(stats.totaux.tauxAbsence) }}</strong>
+          <em>{{ stats.totaux.absents }} absent{{ stats.totaux.absents > 1 ? 's' : '' }}</em>
+        </div>
+        <div class="portal-card st-kpi">
+          <mat-icon>person_add</mat-icon>
+          <span>Nouveaux patients</span>
+          <strong>{{ stats.totaux.nouveauxPatients }}</strong>
+          <em>sur {{ mois }} mois</em>
+        </div>
+        <div class="portal-card st-kpi st-kpi--money">
+          <mat-icon>payments</mat-icon>
+          <span>Chiffre d’affaires</span>
+          <strong>{{ format(stats.totaux.chiffreAffaires) }}</strong>
+          <em>encaissé sur {{ mois }} mois</em>
+        </div>
+      </div>
+
+      <div class="st-charts" [class.is-loading]="loading">
+        <section class="portal-card st-chart" *ngFor="let serie of series" [class.st-chart--money]="serie.money">
+          <h2><mat-icon>{{ serie.icon }}</mat-icon>{{ serie.title }}</h2>
+          <div class="st-bars" [style.grid-template-columns]="'repeat(' + stats.mois.length + ', minmax(0, 1fr))'">
+            <div class="st-bar" *ngFor="let m of stats.mois"
+                 [matTooltip]="m.libelle + ' : ' + (serie.money ? format(value(m, serie)) : value(m, serie))">
+              <span class="st-bar__value">{{ label(m, serie) }}</span>
+              <div class="st-bar__track"><i [style.height.%]="height(m, serie)"></i></div>
+              <span class="st-bar__label">{{ m.libelle.split(' ')[0] }}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="portal-card st-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Mois</th>
+              <th class="st-num">Rendez-vous</th>
+              <th class="st-num">Honorés</th>
+              <th class="st-num">Absents</th>
+              <th class="st-num">Annulés</th>
+              <th class="st-num">Absence</th>
+              <th class="st-num">Demandes en ligne</th>
+              <th class="st-num">Nouveaux patients</th>
+              <th class="st-num">Chiffre d’affaires</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of stats.mois.slice().reverse()">
+              <td class="st-month">{{ m.libelle }}</td>
+              <td class="st-num">{{ m.rendezVous }}</td>
+              <td class="st-num">{{ m.honores }}</td>
+              <td class="st-num">{{ m.absents }}</td>
+              <td class="st-num">{{ m.annules }}</td>
+              <td class="st-num">{{ monthRate(m) }}</td>
+              <td class="st-num">{{ m.demandesEnLigne }}</td>
+              <td class="st-num">{{ m.nouveauxPatients }}</td>
+              <td class="st-num"><strong>{{ format(m.chiffreAffaires) }}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </ng-container>
+  </div>
+</section>

@@ -270,6 +270,10 @@ public class RendezVousServicesImpl implements RendezVousServices {
 		if (us.getRole() != Role.Medecin) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown doctor");
 		}
+		// At most 2 pending requests per e-mail address.
+		if (rvrepo.countByPatientEmailIgnoreCaseAndStateaptAndDateOfAptAfter(clean(apt.getPatientEmail()), StateApt.waiting, new Date()) >= 2) {
+			throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Too many pending requests for this e-mail");
+		}
 		if (!planningService.isBookable(us.getId(), apt.getDateOfApt())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Outside the doctor's opening hours");
 		}

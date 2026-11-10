@@ -54,6 +54,8 @@ public class PlanningService {
 	/** The whole weekly planning plus the upcoming days off. */
 	public static class Planning {
 		public int dureeCreneau;
+		/** Default consultation fee (dinars), or null. */
+		public Double tarifConsultation;
 		public List<Jour> jours = new ArrayList<>();
 		public List<CongeEntity> conges = new ArrayList<>();
 	}
@@ -73,6 +75,7 @@ public class PlanningService {
 	public Planning get(long medecinId) {
 		Planning planning = new Planning();
 		planning.dureeCreneau = slotMinutes(medecinId);
+		planning.tarifConsultation = tarif(medecinId);
 		for (int day = 1; day <= 7; day++) {
 			planning.jours.add(toDto(dayRule(medecinId, day)));
 		}
@@ -154,6 +157,10 @@ public class PlanningService {
 		PlanningParametresEntity settings = parametresRepository.findById(medecinId).orElseGet(PlanningParametresEntity::new);
 		settings.setMedecinId(medecinId);
 		settings.setDureeCreneau(planning.dureeCreneau);
+		if (planning.tarifConsultation != null && (planning.tarifConsultation < 0 || planning.tarifConsultation > 100000)) {
+			throw bad("Invalid consultation fee");
+		}
+		settings.setTarifConsultation(planning.tarifConsultation);
 		parametresRepository.save(settings);
 		return get(medecinId);
 	}
@@ -179,6 +186,11 @@ public class PlanningService {
 	}
 
 	// ------------------------------------------------------------------ helpers
+
+	/** The doctor's default consultation fee, or null when not set. */
+	public Double tarif(long medecinId) {
+		return parametresRepository.findById(medecinId).map(PlanningParametresEntity::getTarifConsultation).orElse(null);
+	}
 
 	private int slotMinutes(long medecinId) {
 		return parametresRepository.findById(medecinId)

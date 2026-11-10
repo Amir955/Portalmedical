@@ -26,6 +26,13 @@
       </button>
     </div>
 
+    <p class="pm-form-group">Tarif de consultation</p>
+    <label class="ps-fee">
+      <input type="number" min="0" step="0.5" [(ngModel)]="tarif" placeholder="Ex. 50" aria-label="Tarif de consultation en dinars">
+      <span>DT</span>
+    </label>
+    <p class="ps-hint ps-hint--fee">Pré-rempli à l’encaissement, modifiable à chaque paiement.</p>
+
     <div class="ps-week-head">
       <p class="pm-form-group">Semaine type</p>
       <button type="button" class="ps-link" (click)="copyMonday()">

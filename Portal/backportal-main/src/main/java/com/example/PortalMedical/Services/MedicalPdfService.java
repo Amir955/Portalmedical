@@ -23,6 +23,7 @@ import com.example.PortalMedical.DTO.DocumentPdfRequest;
 import com.example.PortalMedical.DTO.OrdonnancePdfLine;
 import com.example.PortalMedical.DTO.OrdonnancePdfRequest;
 import com.example.PortalMedical.enteties.Genre;
+import com.example.PortalMedical.enteties.PaiementEntity;
 import com.example.PortalMedical.enteties.PatientEntity;
 import com.example.PortalMedical.enteties.UserEntity;
 
@@ -68,7 +69,8 @@ public class MedicalPdfService {
 		ORDONNANCE("Ordonnance", "ORD"),
 		CERTIFICAT_MEDICAL("Certificat médical", "CM"),
 		CERTIFICAT_APTITUDE("Certificat d'aptitude", "CA"),
-		LETTRE("Lettre à un confrère", "LC");
+		LETTRE("Lettre à un confrère", "LC"),
+		RECU("Reçu de paiement", "REC");
 
 		private final String title;
 		private final String refPrefix;
@@ -185,6 +187,50 @@ public class MedicalPdfService {
 			drawProse(state, "Bien confraternellement,");
 			drawSignature(state);
 		});
+	}
+
+	/** Payment receipt for a consultation. */
+	public byte[] buildRecu(UserEntity doctor, PatientEntity patient, PaiementEntity paiement) throws IOException {
+		return render(DocKind.RECU, doctor, patient, state -> {
+			drawPatientPanel(state);
+			String when = formatDate(paiement.getDatePaiement());
+			drawProse(state, "Je soussigné(e), Dr " + doctorName(doctor) + ", certifie avoir reçu de "
+					+ fullName(patient) + " la somme de " + formatAmount(paiement.getMontant())
+					+ " au titre d'une consultation médicale, le " + when + ".");
+			drawKeyFigure(state, "Montant reçu", formatAmount(paiement.getMontant()),
+					"Payé par " + modeLabel(paiement.getMode()) + " le " + when);
+			drawRows(state, "Détails", new String[][] {
+					{ "N° de reçu", paiement.getNumeroRecu() },
+					{ "Acte", "Consultation" },
+					{ "Mode de paiement", modeLabel(paiement.getMode()) },
+					{ "Encaissé par", paiement.getEncaissePar() },
+					{ "Note", paiement.getNote() } }, null);
+			drawClosing(state, "Reçu délivré pour servir et valoir ce que de droit.");
+			drawSignature(state);
+		});
+	}
+
+	/** 45.5 -> "45,500 DT" (Tunisian dinar, 3 decimals). */
+	private static String formatAmount(double amount) {
+		java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols(Locale.FRANCE);
+		symbols.setGroupingSeparator(' ');
+		return new java.text.DecimalFormat("#,##0.000", symbols).format(amount) + " DT";
+	}
+
+	private static String modeLabel(String mode) {
+		if (mode == null) {
+			return "espèces";
+		}
+		switch (mode) {
+			case "cheque":
+				return "chèque";
+			case "carte":
+				return "carte bancaire";
+			case "virement":
+				return "virement";
+			default:
+				return "espèces";
+		}
 	}
 
 	// ------------------------------------------------------------------ document skeleton

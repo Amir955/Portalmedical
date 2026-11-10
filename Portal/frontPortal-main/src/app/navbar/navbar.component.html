@@ -16,6 +16,10 @@
        [matTooltip]="collapsed ? 'Tableau de bord' : ''" matTooltipPosition="right">
       <mat-icon>space_dashboard</mat-icon><span class="side-link__label">Tableau de bord</span>
     </a>
+    <a class="side-link" [routerLink]="['/salle-attente']" routerLinkActive="is-active" (click)="closeMenu()"
+       [matTooltip]="collapsed ? 'Salle d’attente' : ''" matTooltipPosition="right">
+      <mat-icon>chair</mat-icon><span class="side-link__label">Salle d’attente</span>
+    </a>
     <a class="side-link" [routerLink]="['/calender']" routerLinkActive="is-active" (click)="closeMenu()"
        [matTooltip]="collapsed ? 'Calendrier' : ''" matTooltipPosition="right">
       <mat-icon>calendar_month</mat-icon><span class="side-link__label">Calendrier</span>
@@ -45,6 +49,14 @@
     </ng-container>
 
     <p class="side-nav__label">Gestion</p>
+    <a class="side-link" [routerLink]="['/caisse']" routerLinkActive="is-active" (click)="closeMenu()"
+       [matTooltip]="collapsed ? 'Caisse' : ''" matTooltipPosition="right">
+      <mat-icon>point_of_sale</mat-icon><span class="side-link__label">Caisse</span>
+    </a>
+    <a class="side-link" [routerLink]="['/statistiques']" routerLinkActive="is-active" (click)="closeMenu()"
+       [matTooltip]="collapsed ? 'Statistiques' : ''" matTooltipPosition="right">
+      <mat-icon>insights</mat-icon><span class="side-link__label">Statistiques</span>
+    </a>
     <a class="side-link" [routerLink]="['/profil']" routerLinkActive="is-active"
        (click)="closeMenu()" [matTooltip]="collapsed ? 'Paramètres' : ''" matTooltipPosition="right">
       <mat-icon>settings</mat-icon><span class="side-link__label">Paramètres</span>

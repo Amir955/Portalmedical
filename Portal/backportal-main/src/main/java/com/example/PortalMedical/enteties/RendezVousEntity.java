@@ -77,6 +77,28 @@ public class RendezVousEntity implements Serializable {
 	@JsonIgnore
 	private Boolean rappelEnvoye;
 
+	/** Day-of-visit status: null (planned), arrive, en_consultation, termine, absent. */
+	private String statutVisite;
+
+	/** When the patient was marked as arrived (waiting room). */
+	private Date heureArrivee;
+
+	public String getStatutVisite() {
+		return statutVisite;
+	}
+
+	public void setStatutVisite(String statutVisite) {
+		this.statutVisite = statutVisite;
+	}
+
+	public Date getHeureArrivee() {
+		return heureArrivee;
+	}
+
+	public void setHeureArrivee(Date heureArrivee) {
+		this.heureArrivee = heureArrivee;
+	}
+
 	public String getJetonAnnulation() {
 		return jetonAnnulation;
 	}

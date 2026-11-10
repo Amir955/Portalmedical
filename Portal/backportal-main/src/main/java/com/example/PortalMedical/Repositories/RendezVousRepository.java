@@ -36,4 +36,6 @@ public interface RendezVousRepository extends JpaRepository<RendezVousEntity, Lo
 	List<RendezVousEntity> findByPatient_Id(long patientId);
 
 	List<RendezVousEntity> findByPatientEmailIgnoreCase(String patientEmail);
+
+	long countByPatientEmailIgnoreCaseAndStateaptAndDateOfAptAfter(String patientEmail, StateApt state, Date after);
 }

@@ -21,6 +21,8 @@ export interface Conge {
 
 export interface Planning {
   dureeCreneau: number;
+  /** Default consultation fee in dinars, or null. */
+  tarifConsultation?: number | null;
   jours: PlanningJour[];
   conges: Conge[];
 }

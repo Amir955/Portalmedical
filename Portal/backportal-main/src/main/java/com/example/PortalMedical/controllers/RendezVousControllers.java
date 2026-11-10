@@ -65,6 +65,9 @@ public class RendezVousControllers {
 	PracticeScope practiceScope;
 
 	@Autowired
+	com.example.PortalMedical.Services.PublicRequestThrottle requestThrottle;
+
+	@Autowired
 	com.example.PortalMedical.Repositories.PatientRepository patientRepository;
 
 	/** Staff add an appointment, only for a doctor of their own practice. */
@@ -76,7 +79,13 @@ public class RendezVousControllers {
 	}
 
 	@PostMapping("/demandeRDV")
-	public Map<String, Object> DemandeRDV(@RequestBody RendezVousEntity apt) {
+	public Map<String, Object> DemandeRDV(@RequestBody RendezVousEntity apt, javax.servlet.http.HttpServletRequest request) {
+		// Public form: at most 5 requests per hour from the same address.
+		String forwarded = request.getHeader("X-Forwarded-For");
+		String ip = forwarded != null && !forwarded.trim().isEmpty() ? forwarded.split(",")[0].trim() : request.getRemoteAddr();
+		if (!requestThrottle.allow("rdv:" + ip, 5, 60L * 60 * 1000)) {
+			throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Too many requests, try again later");
+		}
 		// Public endpoint: answer with the request id only, not the doctor's full profile.
 		return Collections.singletonMap("idapt", rendezVousServices.demandeRDV(apt).getIdapt());
 	}
@@ -89,6 +98,28 @@ public class RendezVousControllers {
 	public List<String> creneauxPris(@PathVariable long medecinId,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
 		return rendezVousServices.takenSlots(medecinId, date);
+	}
+
+	/** Day-of-visit status from the waiting room: prevu, arrive, en_consultation, termine, absent. */
+	@PutMapping("/{id}/statut")
+	public RendezVousEntity statut(@PathVariable long id, @RequestBody Map<String, String> body) {
+		RendezVousEntity rdv = requireInPractice(id);
+		String statut = body == null ? null : body.get("statut");
+		if (statut == null || statut.isEmpty() || "prevu".equals(statut)) {
+			rdv.setStatutVisite(null);
+			rdv.setHeureArrivee(null);
+		} else if (java.util.Arrays.asList("arrive", "en_consultation", "termine", "absent").contains(statut)) {
+			rdv.setStatutVisite(statut);
+			if ("arrive".equals(statut) && rdv.getHeureArrivee() == null) {
+				rdv.setHeureArrivee(new Date());
+			}
+			if ("absent".equals(statut)) {
+				rdv.setHeureArrivee(null);
+			}
+		} else {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status");
+		}
+		return rendezVousRepository.save(rdv);
 	}
 
 	/** A patient's appointments in the user's practice (linked record, or same e-mail), newest first. */

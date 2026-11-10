@@ -1,0 +1,141 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <header class="wr-head">
+      <div>
+        <p class="wr-date">{{ today | date:'EEEE d MMMM yyyy' }}</p>
+        <h1>Salle d’attente</h1>
+        <p class="wr-sub">Suivez les patients du jour : arrivée, consultation, encaissement.</p>
+      </div>
+      <div class="wr-totals">
+        <div><strong>{{ appointments.length }}</strong><span>rendez-vous</span></div>
+        <div><strong>{{ inColumn('arrive').length }}</strong><span>en attente</span></div>
+        <div><strong>{{ format(totalToday) }}</strong><span>encaissés</span></div>
+      </div>
+    </header>
+
+    <div class="portal-card wr-empty" *ngIf="!loading && !appointments.length">
+      <mat-icon>event_available</mat-icon>
+      <strong>Aucun rendez-vous aujourd’hui</strong>
+      <span>Les rendez-vous confirmés du jour apparaîtront ici.</span>
+    </div>
+
+    <div class="wr-board" *ngIf="appointments.length">
+      <section class="wr-col" *ngFor="let col of columns" [attr.data-col]="col.key">
+        <header class="wr-col__head">
+          <mat-icon>{{ col.icon }}</mat-icon>
+          <h2>{{ col.title }}</h2>
+          <span class="wr-col__count">{{ inColumn(col.key).length }}</span>
+        </header>
+
+        <div class="wr-col__body">
+          <p class="wr-col__none" *ngIf="!inColumn(col.key).length">Personne</p>
+
+          <article class="wr-card" *ngFor="let rdv of inColumn(col.key)" [class.is-busy]="busyId === rdv.idapt"
+                   [class.is-late]="isLate(rdv)">
+            <div class="wr-card__top">
+              <span class="wr-card__time">{{ rdv.dateOfApt | date:'HH:mm' }}</span>
+              <span class="wr-tag wr-tag--late" *ngIf="isLate(rdv)">En retard</span>
+              <span class="wr-tag" *ngIf="col.key === 'arrive' && rdv.heureArrivee">attend depuis {{ waiting(rdv) }}</span>
+              <span class="wr-tag wr-tag--paid" *ngIf="col.key === 'termine' && payments[rdv.idapt]">
+                {{ format(payments[rdv.idapt].montant) }}
+              </span>
+              <span class="wr-tag wr-tag--due" *ngIf="col.key === 'termine' && !payments[rdv.idapt]">Non encaissé</span>
+            </div>
+            <a *ngIf="patientId(rdv); else plainName" class="wr-card__name" [routerLink]="['/patients', patientId(rdv)]">{{ patientName(rdv) }}</a>
+            <ng-template #plainName><strong class="wr-card__name">{{ patientName(rdv) }}</strong></ng-template>
+
+            <div class="wr-card__actions" [ngSwitch]="col.key">
+              <ng-container *ngSwitchCase="'prevu'">
+                <button type="button" class="pm-btn pm-btn--primary" (click)="setStatut(rdv, 'arrive', 'Patient arrivé.')">
+                  <mat-icon>how_to_reg</mat-icon>Arrivé
+                </button>
+                <button type="button" class="pm-btn pm-btn--secondary" (click)="setStatut(rdv, 'absent', 'Marqué absent.')">Absent</button>
+              </ng-container>
+              <ng-container *ngSwitchCase="'arrive'">
+                <button type="button" class="pm-btn pm-btn--primary" (click)="setStatut(rdv, 'en_consultation')">
+                  <mat-icon>login</mat-icon>Faire entrer
+                </button>
+                <button type="button" class="pm-icon-btn" (click)="setStatut(rdv, 'prevu')" matTooltip="Annuler l’arrivée" aria-label="Annuler l’arrivée">
+                  <mat-icon>undo</mat-icon>
+                </button>
+              </ng-container>
+              <ng-container *ngSwitchCase="'en_consultation'">
+                <button type="button" class="pm-btn pm-btn--primary" (click)="openCheckout(rdv)">
+                  <mat-icon>point_of_sale</mat-icon>Terminer et encaisser
+                </button>
+              </ng-container>
+              <ng-container *ngSwitchCase="'termine'">
+                <button type="button" class="pm-btn pm-btn--secondary" *ngIf="payments[rdv.idapt]" (click)="receipt(rdv)">
+                  <mat-icon>receipt_long</mat-icon>Reçu
+                </button>
+                <button type="button" class="pm-btn" [class.pm-btn--primary]="!payments[rdv.idapt]"
+                        [class.pm-btn--secondary]="payments[rdv.idapt]" (click)="openCheckout(rdv)">
+                  <mat-icon>point_of_sale</mat-icon>{{ payments[rdv.idapt] ? 'Modifier' : 'Encaisser' }}
+                </button>
+              </ng-container>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <section class="portal-card wr-absents" *ngIf="absents.length">
+      <h2><mat-icon>person_off</mat-icon>Absents ({{ absents.length }})</h2>
+      <ul>
+        <li *ngFor="let rdv of absents">
+          <span>{{ rdv.dateOfApt | date:'HH:mm' }} · {{ patientName(rdv) }}</span>
+          <button type="button" class="ps-undo" (click)="setStatut(rdv, 'prevu')">Annuler</button>
+        </li>
+      </ul>
+    </section>
+  </div>
+</section>
+
+<p-dialog header="Encaisser la consultation" [visible]="!!checkout" (visibleChange)="$event ? null : closeCheckout()"
+          [modal]="true" [draggable]="false" [resizable]="false" [style]="{width: '480px', maxWidth: '94vw'}" [baseZIndex]="10000">
+  <ng-container *ngIf="checkout">
+    <p class="wr-pay__who">
+      <strong>{{ patientName(checkout) }}</strong> · rendez-vous de {{ checkout.dateOfApt | date:'HH:mm' }}
+    </p>
+
+    <div class="form-alert" role="alert" *ngIf="payError">
+      <mat-icon aria-hidden="true">error_outline</mat-icon><span>{{ payError }}</span>
+    </div>
+
+    <label class="wr-pay__amount">
+      <span>Montant reçu</span>
+      <span class="wr-pay__input">
+        <input type="number" min="0" step="0.5" [(ngModel)]="montant" (ngModelChange)="payError = ''" placeholder="0" aria-label="Montant en dinars">
+        <em>DT</em>
+      </span>
+    </label>
+
+    <p class="pm-form-group">Mode de paiement</p>
+    <div class="wr-pay__modes" role="radiogroup" aria-label="Mode de paiement">
+      <button type="button" *ngFor="let m of modes" role="radio" class="wr-pay__mode" [class.is-active]="mode === m.value"
+              [attr.aria-checked]="mode === m.value" (click)="mode = m.value">
+        <mat-icon>{{ m.icon }}</mat-icon>{{ m.label }}
+      </button>
+    </div>
+
+    <label class="wr-pay__note">
+      <span>Note <em>(facultatif)</em></span>
+      <input type="text" [(ngModel)]="note" maxlength="120" placeholder="N° de chèque, remarque…">
+    </label>
+
+    <label class="wr-pay__check">
+      <input type="checkbox" [(ngModel)]="openReceipt"> Ouvrir le reçu (PDF) après l’encaissement
+    </label>
+
+    <div class="pm-dialog-actions">
+      <button type="button" class="pm-btn pm-btn--secondary pm-dialog-actions__start" (click)="finishWithoutPayment()"
+              *ngIf="!payments[checkout.idapt]">Terminer sans paiement</button>
+      <button type="button" class="pm-btn pm-btn--secondary" (click)="closeCheckout()">Annuler</button>
+      <button type="button" class="pm-btn pm-btn--primary" [disabled]="paying" (click)="pay()">
+        {{ paying ? 'Enregistrement…' : 'Encaisser' }}
+      </button>
+    </div>
+  </ng-container>
+</p-dialog>

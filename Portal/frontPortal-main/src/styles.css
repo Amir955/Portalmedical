@@ -1746,3 +1746,9 @@ img {
 .cancel-keep {
   margin-top: 0.6rem;
 }
+
+/* Material overlays (select lists, date pickers, menus, tooltips) must open above the
+   PrimeNG dialogs (baseZIndex 10000), otherwise a select inside a dialog opens behind it. */
+.cdk-overlay-container {
+  z-index: 20000;
+}

@@ -263,6 +263,8 @@ export class DemandeRendezVousComponent implements OnInit {
           this.setFormError('Ce créneau vient d’être réservé. Choisissez une autre heure.', 'Créneau indisponible');
           this.ajoutRDVform.patchValue({ heure: '' }, { emitEvent: false });
           this.loadTakenSlots([doctor], true);
+        } else if (error && error.status === 429) {
+          this.setFormError('Vous avez déjà envoyé plusieurs demandes. Attendez la réponse du cabinet ou réessayez plus tard.', 'Trop de demandes');
         } else if (error && error.status === 400) {
           this.setFormError('Vérifiez vos coordonnées et le créneau choisi.', 'Demande incomplète');
         } else {

@@ -14,6 +14,17 @@ public class PlanningParametresEntity {
 
 	private int dureeCreneau;
 
+	/** Default consultation fee in dinars (pre-filled at checkout), or null. */
+	private Double tarifConsultation;
+
+	public Double getTarifConsultation() {
+		return tarifConsultation;
+	}
+
+	public void setTarifConsultation(Double tarifConsultation) {
+		this.tarifConsultation = tarifConsultation;
+	}
+
 	public long getMedecinId() {
 		return medecinId;
 	}

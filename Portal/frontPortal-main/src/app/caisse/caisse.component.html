@@ -1,0 +1,101 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <header class="cs-head">
+      <div>
+        <h1>Caisse</h1>
+        <p class="cs-sub">Paiements encaissés, reçus et export comptable.</p>
+      </div>
+      <button type="button" class="pm-btn pm-btn--secondary" (click)="exportCsv()" [disabled]="!paiements.length">
+        <mat-icon>download</mat-icon>Exporter (CSV)
+      </button>
+    </header>
+
+    <div class="cs-filters portal-card">
+      <div class="cs-periods" role="tablist" aria-label="Période">
+        <button type="button" *ngFor="let p of periodes" role="tab" class="cs-period" [class.is-active]="periode === p.key"
+                [attr.aria-selected]="periode === p.key" (click)="p.key === 'perso' ? periode = 'perso' : setPeriode(p.key)">
+          {{ p.label }}
+        </button>
+      </div>
+      <div class="cs-range">
+        <label>Du <input type="date" [(ngModel)]="du" (change)="onCustomChange()"></label>
+        <label>Au <input type="date" [(ngModel)]="au" (change)="onCustomChange()"></label>
+      </div>
+    </div>
+
+    <div class="cs-summary">
+      <div class="cs-total portal-card">
+        <span>Total encaissé</span>
+        <strong>{{ format(resume.total) }}</strong>
+        <em>{{ resume.nombre }} paiement{{ resume.nombre > 1 ? 's' : '' }}</em>
+      </div>
+      <div class="cs-mode portal-card" *ngFor="let m of modes">
+        <mat-icon>{{ m.icon }}</mat-icon>
+        <div>
+          <span>{{ m.label }}</span>
+          <strong>{{ format(resume.parMode[m.value] || 0) }}</strong>
+          <div class="cs-bar"><i [style.width.%]="share(m.value)"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="portal-card cs-list">
+      <p class="cs-empty" *ngIf="!loading && !paiements.length">
+        <mat-icon>point_of_sale</mat-icon>Aucun paiement sur cette période.
+      </p>
+      <p class="cs-empty" *ngIf="loading">Chargement…</p>
+
+      <table *ngIf="!loading && paiements.length">
+        <thead>
+          <tr>
+            <th>Reçu</th>
+            <th>Date</th>
+            <th>Patient</th>
+            <th>Mode</th>
+            <th class="cs-num">Montant</th>
+            <th aria-label="Actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of paiements">
+            <td class="cs-ref">{{ p.numeroRecu }}</td>
+            <td>{{ p.datePaiement | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <a *ngIf="p.patientId; else noLink" [routerLink]="['/patients', p.patientId]">{{ p.patientNom || 'Patient' }}</a>
+              <ng-template #noLink>{{ p.patientNom || 'Patient' }}</ng-template>
+              <small *ngIf="p.note">{{ p.note }}</small>
+            </td>
+            <td><span class="cs-chip"><mat-icon>{{ modeIcon(p.mode) }}</mat-icon>{{ modeLabel(p.mode) }}</span></td>
+            <td class="cs-num"><strong>{{ format(p.montant) }}</strong></td>
+            <td class="cs-actions">
+              <button type="button" class="pm-icon-btn" (click)="receipt(p)" matTooltip="Reçu (PDF)" aria-label="Reçu (PDF)">
+                <mat-icon>receipt_long</mat-icon>
+              </button>
+              <button type="button" class="pm-icon-btn pm-icon-btn--danger" (click)="askDelete(p)" matTooltip="Supprimer" aria-label="Supprimer">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</section>
+
+<p-dialog header="Supprimer ce paiement ?" [visible]="!!confirmDelete" (visibleChange)="$event ? null : confirmDelete = null"
+          [modal]="true" [draggable]="false" [resizable]="false" [style]="{width: '420px', maxWidth: '94vw'}" [baseZIndex]="10000">
+  <ng-container *ngIf="confirmDelete">
+    <p class="cs-confirm">
+      Le paiement <strong>{{ confirmDelete.numeroRecu }}</strong> de {{ format(confirmDelete.montant) }}
+      ({{ confirmDelete.patientNom || 'Patient' }}) sera supprimé et la consultation repassera « non encaissée ».
+    </p>
+    <div class="pm-dialog-actions">
+      <button type="button" class="pm-btn pm-btn--secondary" (click)="confirmDelete = null">Annuler</button>
+      <button type="button" class="pm-btn pm-btn--danger-solid" [disabled]="deleting" (click)="doDelete()">
+        {{ deleting ? 'Suppression…' : 'Supprimer' }}
+      </button>
+    </div>
+  </ng-container>
+</p-dialog>

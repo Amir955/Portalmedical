@@ -19,6 +19,8 @@ export class PlanningSettingsComponent implements OnInit {
   formError = '';
 
   dureeCreneau = 30;
+  /** Default consultation fee (dinars), pre-filled at checkout. */
+  tarif: number | null = null;
   jours: PlanningJour[] = [];
   conges: Conge[] = [];
 
@@ -101,7 +103,8 @@ export class PlanningSettingsComponent implements OnInit {
     }
     this.formError = '';
     this.saving = true;
-    this.planningService.saveMine({ dureeCreneau: this.dureeCreneau, jours: this.jours, conges: [] }).subscribe(
+    const tarif = this.tarif === null || (this.tarif as any) === '' ? null : Number(this.tarif);
+    this.planningService.saveMine({ dureeCreneau: this.dureeCreneau, tarifConsultation: tarif, jours: this.jours, conges: [] }).subscribe(
       (planning) => {
         this.saving = false;
         this.apply(planning);
@@ -158,11 +161,15 @@ export class PlanningSettingsComponent implements OnInit {
 
   private apply(planning: Planning): void {
     this.dureeCreneau = planning.dureeCreneau;
+    this.tarif = planning.tarifConsultation == null ? null : planning.tarifConsultation;
     this.jours = planning.jours.map((jour) => ({ ...jour }));
     this.conges = planning.conges || [];
   }
 
   private validate(): string {
+    if (this.tarif !== null && (this.tarif as any) !== '' && (isNaN(Number(this.tarif)) || Number(this.tarif) < 0)) {
+      return 'Le tarif de consultation doit être un montant positif.';
+    }
     for (const jour of this.jours) {
       if (!jour.actif) {
         continue;

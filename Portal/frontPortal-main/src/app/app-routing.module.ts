@@ -24,6 +24,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AnnulationComponent } from './annulation/annulation.component';
 import { PatientFileComponent } from './patient-file/patient-file.component';
+import { SalleAttenteComponent } from './salle-attente/salle-attente.component';
+import { CaisseComponent } from './caisse/caisse.component';
+import { StatsCabinetComponent } from './stats-cabinet/stats-cabinet.component';
 
 const routes: Routes = [
   { path: '', component: AcceuilComponent},
@@ -33,6 +36,9 @@ const routes: Routes = [
   { path: 'annuler/:token', component: AnnulationComponent },
   { path: 'patients/:id', component: PatientFileComponent, canActivate: [AuthGuard] },
   { path: 'tableau-de-bord', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'salle-attente', component: SalleAttenteComponent, canActivate: [AuthGuard] },
+  { path: 'caisse', component: CaisseComponent, canActivate: [AuthGuard] },
+  { path: 'statistiques', component: StatsCabinetComponent, canActivate: [AuthGuard] },
   {path:'calender', component: CalenderComponent, canActivate: [AuthGuard]},
   {path:'listeRDV', component: ListeRendezVousComponent, canActivate: [AuthGuard]},
   { path: 'profil', component: ProfileComponent, canActivate: [AuthGuard] },
