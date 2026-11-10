@@ -245,8 +245,10 @@
 
               <label class="field">
                 <span>Date de naissance</span>
-                <input type="date" formControlName="patientDateNaissance" autocomplete="bday" [max]="minDate">
-                <small class="field-error" *ngIf="hasError('patientDateNaissance')">La date de naissance est requise.</small>
+                <input type="text" inputmode="numeric" autocomplete="bday" placeholder="jj/mm/aaaa" maxlength="10"
+                       [value]="birthText" (input)="onBirthInput($event)" (blur)="onBirthBlur()" aria-label="Date de naissance (jour, mois, année)">
+                <small class="field-error" *ngIf="birthError">{{ birthError }}</small>
+                <small class="field-error" *ngIf="!birthError && hasError('patientDateNaissance')">La date de naissance est requise.</small>
               </label>
 
               <label class="field">

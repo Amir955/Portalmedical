@@ -84,6 +84,58 @@ export class DemandeRendezVousComponent implements OnInit {
     this.getAllMedecin();
   }
 
+  /** Date of birth as typed ("jj/mm/aaaa"); the form keeps yyyy-MM-dd once it is complete and valid. */
+  birthText = '';
+  birthError = '';
+
+  /** Types digits only; the slashes are added automatically. */
+  onBirthInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 8);
+    let text = digits;
+    if (digits.length > 4) {
+      text = digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4);
+    } else if (digits.length > 2) {
+      text = digits.slice(0, 2) + '/' + digits.slice(2);
+    }
+    this.birthText = text;
+    input.value = text;
+    this.birthError = '';
+
+    const control = this.ajoutRDVform.get('patientDateNaissance');
+    if (!control) {
+      return;
+    }
+    if (digits.length < 8) {
+      control.setValue('');
+      return;
+    }
+    const day = +digits.slice(0, 2);
+    const month = +digits.slice(2, 4);
+    const year = +digits.slice(4);
+    const date = new Date(year, month - 1, day);
+    const real = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+    if (!real) {
+      this.birthError = 'Cette date n’existe pas.';
+      control.setValue('');
+    } else if (date > new Date() || year < 1900) {
+      this.birthError = 'Vérifiez l’année de naissance.';
+      control.setValue('');
+    } else {
+      control.setValue(this.toDateInputValue(date));
+    }
+  }
+
+  onBirthBlur(): void {
+    const control = this.ajoutRDVform.get('patientDateNaissance');
+    if (control) {
+      control.markAsTouched();
+    }
+    if (this.birthText && this.birthText.length < 10 && !this.birthError) {
+      this.birthError = 'Format attendu : jj/mm/aaaa.';
+    }
+  }
+
   private setFormError(message: string, title = 'Demande non envoyée'): void {
     this.formError = message;
     this.formErrorTitle = title;
