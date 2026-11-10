@@ -1,0 +1,132 @@
+:host {
+  display: block;
+}
+
+.doctors__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.8rem;
+}
+
+.doctors__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--portal-accent-strong);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.doctors__all:hover {
+  text-decoration: underline;
+}
+
+.doctors__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.doctor {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: 1.4rem;
+  border: 1px solid rgba(31, 58, 95, 0.08);
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(31, 58, 95, 0.06);
+}
+
+.doctor__head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.doctor__avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--portal-primary);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.doctor__who {
+  min-width: 0;
+}
+
+.doctor__who h3 {
+  overflow: hidden;
+  margin: 0;
+  color: var(--portal-primary);
+  font-size: 1.02rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doctor__who p {
+  overflow: hidden;
+  margin: 0.15rem 0 0;
+  color: var(--portal-muted);
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doctor__slot {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-height: 58px;
+  padding: 0.7rem 0.8rem;
+  border-radius: 14px;
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent-strong);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.doctor__slot strong {
+  display: block;
+  color: var(--portal-primary);
+  font-size: 0.98rem;
+}
+
+.doctor__slot.is-empty {
+  background: #f4f6f9;
+  color: var(--portal-muted);
+}
+
+.doctor__slot .mat-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.doctor__book {
+  width: 100%;
+  min-height: 46px;
+}
+
+@media (max-width: 1100px) {
+  .doctors__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .doctors__grid {
+    grid-template-columns: 1fr;
+  }
+}

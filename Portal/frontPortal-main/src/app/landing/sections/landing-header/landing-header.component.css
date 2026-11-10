@@ -1,0 +1,129 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: block;
+}
+
+.lp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem 5vw;
+  border-bottom: 1px solid rgba(31, 58, 95, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 30px rgba(31, 58, 95, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand__mark {
+  width: 48px;
+  height: 48px;
+}
+
+.brand__copy {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.brand__title {
+  color: var(--portal-primary);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.brand__accent {
+  color: var(--portal-accent-strong);
+}
+
+.brand__tagline {
+  color: var(--portal-muted);
+  font-size: 0.82rem;
+}
+
+.lp-header__links {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.lp-header__links button {
+  padding: 0.55rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--portal-primary);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lp-header__links button:hover {
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent-strong);
+}
+
+.lp-header__pro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0 1.2rem;
+  border-radius: 999px;
+  background: var(--portal-primary);
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lp-header__pro:hover {
+  background: #17314f;
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(31, 58, 95, 0.2);
+}
+
+@media (max-width: 991px) {
+  .lp-header__links {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .lp-header {
+    padding: 0.7rem 16px;
+  }
+
+  .brand__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand__title {
+    font-size: 1.3rem;
+  }
+
+  .brand__tagline {
+    display: none;
+  }
+
+  .lp-header__pro {
+    width: 46px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .lp-header__pro span {
+    display: none;
+  }
+}

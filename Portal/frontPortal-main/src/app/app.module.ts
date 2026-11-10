@@ -44,7 +44,14 @@ import { CertificatmedicalaptitudeComponent } from './certificatmedicalaptitude/
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSquare, faCheckSquare } from '@fortawesome/free-solid-svg-icons';
-import { AcceuilComponent } from './acceuil/acceuil.component';
+import { LandingComponent } from './landing/landing.component';
+import { LandingHeaderComponent } from './landing/sections/landing-header/landing-header.component';
+import { LandingHeroComponent } from './landing/sections/landing-hero/landing-hero.component';
+import { LandingHowItWorksComponent } from './landing/sections/landing-how-it-works/landing-how-it-works.component';
+import { LandingDoctorsComponent } from './landing/sections/landing-doctors/landing-doctors.component';
+import { LandingProComponent } from './landing/sections/landing-pro/landing-pro.component';
+import { LandingFaqComponent } from './landing/sections/landing-faq/landing-faq.component';
+import { LandingFooterComponent } from './landing/sections/landing-footer/landing-footer.component';
 import { DemandeRendezVousComponent } from './demande-rendez-vous/demande-rendez-vous.component';
 import { CalenderComponent } from './calender/calender.component';
 import {FullCalendarModule} from "@fullcalendar/angular";
@@ -94,7 +101,14 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     CertificatmedicalComponent,
     LettreAUnCofrereComponent,
     CertificatmedicalaptitudeComponent,
-    AcceuilComponent,
+    LandingComponent,
+    LandingHeaderComponent,
+    LandingHeroComponent,
+    LandingHowItWorksComponent,
+    LandingDoctorsComponent,
+    LandingProComponent,
+    LandingFaqComponent,
+    LandingFooterComponent,
     DemandeRendezVousComponent,
     CalenderComponent,
     ConsultationComponent,

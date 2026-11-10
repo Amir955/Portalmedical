@@ -1,0 +1,30 @@
+<section class="pro" id="medecins">
+  <div class="pro__intro">
+    <p class="lp-eyebrow pro__eyebrow">Vous êtes médecin ?</p>
+    <h2 class="lp-section-title pro__title">Tout votre cabinet au même endroit</h2>
+    <p class="pro__text">
+      Vos patients prennent rendez-vous en ligne sur vos créneaux libres. Vous et votre secrétaire
+      gérez l’agenda, la salle d’attente, les dossiers et la caisse depuis un seul espace.
+    </p>
+    <div class="pro__actions">
+      <a class="lp-btn pro__btn-primary" [routerLink]="['/inscription']">
+        <mat-icon aria-hidden="true">add_business</mat-icon>Créer mon cabinet
+      </a>
+      <a class="lp-btn pro__btn-secondary" [routerLink]="['/login']">J’ai déjà un compte</a>
+    </div>
+    <p class="pro__note">
+      <mat-icon aria-hidden="true">info</mat-icon>
+      Secrétaire ? Votre médecin vous ajoute depuis ses paramètres, puis vous vous connectez à l’espace professionnel.
+    </p>
+  </div>
+
+  <div class="pro__grid">
+    <div class="feature" *ngFor="let f of features">
+      <mat-icon aria-hidden="true">{{ f.icon }}</mat-icon>
+      <div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.text }}</p>
+      </div>
+    </div>
+  </div>
+</section>

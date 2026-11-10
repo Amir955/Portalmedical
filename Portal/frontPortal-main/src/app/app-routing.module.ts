@@ -13,7 +13,7 @@ import { PageAdminComponent } from './page-admin/page-admin.component';
 import { RendezVousComponent } from './rendez-vous/rendez-vous.component';
 import { StatistiquesComponent } from './statistiques/statistiques.component';
 import {ResetPasswordComponent} from "./Authentification/reset-password/reset-password.component";
-import {AcceuilComponent} from "./acceuil/acceuil.component";
+import { LandingComponent } from './landing/landing.component';
 import {DemandeRendezVousComponent} from "./demande-rendez-vous/demande-rendez-vous.component";
 import {CalenderComponent} from "./calender/calender.component";
 import {ListeRendezVousComponent} from "./liste-rendez-vous/liste-rendez-vous.component";
@@ -29,7 +29,7 @@ import { CaisseComponent } from './caisse/caisse.component';
 import { StatsCabinetComponent } from './stats-cabinet/stats-cabinet.component';
 
 const routes: Routes = [
-  { path: '', component: AcceuilComponent},
+  { path: '', component: LandingComponent },
   { path: 'login', component: HomeComponent},
   { path: 'inscription', component: InscriptionComponent },
   { path: 'demandeRDV', component: DemandeRendezVousComponent},

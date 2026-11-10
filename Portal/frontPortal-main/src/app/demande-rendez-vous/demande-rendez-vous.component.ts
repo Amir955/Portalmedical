@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatCalendar, MatCalendarCellCssClasses } from '@angular/material/datepicker';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserEntity } from '../../models/userEntity';
 import { AccountService } from '../services/account.service';
@@ -56,7 +57,8 @@ export class DemandeRendezVousComponent implements OnInit {
     private userService: AccountService,
     private rdvService: RendezVousService,
     private planningService: PlanningService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -191,7 +193,44 @@ export class DemandeRendezVousComponent implements OnInit {
       this.specialtyOptions = this.buildUniqueOptions(this.medecins.map((doctor) => this.getDoctorSpecialty(doctor)));
       this.locationOptions = this.buildUniqueOptions(this.medecins.map((doctor) => this.getDoctorLocation(doctor)));
       this.applyFilters();
+      this.applyLinkParams();
     });
+  }
+
+  /** Filters and doctor sent by the home page (?q, ?specialite, ?ville, ?medecin, ?date). */
+  private applyLinkParams(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const q = params.get('q');
+    const specialite = params.get('specialite');
+    const ville = params.get('ville');
+    if (q) {
+      this.filterQuery = q;
+    }
+    if (specialite && this.specialtyOptions.indexOf(specialite) !== -1) {
+      this.selectedSpecialty = specialite;
+    }
+    if (ville && this.locationOptions.indexOf(ville) !== -1) {
+      this.selectedLocation = ville;
+    }
+    if (q || specialite || ville) {
+      this.applyFilters();
+    }
+
+    const date = params.get('date');
+    if (date && /^\d{4}-\d{2}-\d{2}$/.test(date) && date >= this.minDate) {
+      this.ajoutRDVform.patchValue({ date });
+    }
+    const doctorId = Number(params.get('medecin'));
+    const doctor = doctorId ? this.medecins.find((d) => d.id === doctorId) : null;
+    if (doctor) {
+      this.selectDoctor(doctor);
+      setTimeout(() => {
+        const scheduler = document.querySelector('.scheduler-shell');
+        if (scheduler) {
+          scheduler.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 300);
+    }
   }
 
   /** Fetches the taken times of these doctors for the selected date (cached per day). */

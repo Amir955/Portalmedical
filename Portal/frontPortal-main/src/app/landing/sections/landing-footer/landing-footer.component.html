@@ -1,0 +1,18 @@
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <img src="assets/img/favicon.svg" alt="" class="footer__mark">
+      <div>
+        <strong>PortalMedical</strong>
+        <span>Accessible. Sécurisé. Humain.</span>
+      </div>
+    </div>
+    <nav class="footer__links" aria-label="Liens du pied de page">
+      <a [routerLink]="['/demandeRDV']">Prendre rendez-vous</a>
+      <a [routerLink]="['/login']">Espace professionnel</a>
+      <a [routerLink]="['/inscription']">Créer mon cabinet</a>
+      <button type="button" (click)="scrollTo('faq')">Questions fréquentes</button>
+    </nav>
+  </div>
+  <p class="footer__note">© {{ year }} PortalMedical · En cas d’urgence, appelez le 190 (SAMU).</p>
+</footer>
