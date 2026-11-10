@@ -199,6 +199,7 @@
         </section>
 
         <!-- Secretaries (doctors) -->
+        <app-planning-settings *ngIf="section === 'horaires'"></app-planning-settings>
         <app-secretariat *ngIf="section === 'secretariat' && isDoctor"></app-secretariat>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UserEntity } from '../../models/userEntity';
 import { AccountService } from '../services/account.service';
 import { RendezVousService } from '../services/rendez-vous.service';
+import { Creneaux, PlanningService } from '../services/planning.service';
 
 @Component({
   selector: 'app-demande-rendez-vous',
@@ -18,11 +19,8 @@ export class DemandeRendezVousComponent implements OnInit {
   private takenSlots: { [key: string]: string[] } = {};
   calendarDate: Date = this.getStartOfDay(new Date());
 
-  heures = [
-    '08:30', '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:30', '12:00', '14:00', '14:30',
-    '15:00', '15:30', '16:00', '16:30', '17:00'
-  ];
+  /** Each doctor's bookable times per "doctorId|yyyy-MM-dd" (their opening hours and days off). */
+  private planning: { [key: string]: Creneaux } = {};
 
   specialtyOptions: string[] = [];
   locationOptions: string[] = [];
@@ -35,7 +33,6 @@ export class DemandeRendezVousComponent implements OnInit {
   /** Shown above the submit button until the form is edited. */
   formError = '';
   formErrorTitle = '';
-  readonly meetingDuration = '15 min';
   readonly timezoneLabel = this.buildTimezoneLabel();
 
   readonly minDate = this.getTodayString();
@@ -45,6 +42,7 @@ export class DemandeRendezVousComponent implements OnInit {
     private fb: FormBuilder,
     private userService: AccountService,
     private rdvService: RendezVousService,
+    private planningService: PlanningService,
     private toastr: ToastrService
   ) { }
 
@@ -117,6 +115,15 @@ export class DemandeRendezVousComponent implements OnInit {
 
     (doctors || []).forEach((doctor) => {
       const key = this.slotKey(doctor.id, date);
+      if (!this.planning[key]) {
+        this.planningService.getCreneaux(doctor.id, date).subscribe(
+          (creneaux) => {
+            this.planning[key] = creneaux;
+            this.syncSelectedSlot();
+          },
+          () => { /* keeps "no slot" until the next date change */ }
+        );
+      }
       if (!force && this.takenSlots[key]) {
         return;
       }
@@ -277,18 +284,22 @@ export class DemandeRendezVousComponent implements OnInit {
 
   getDoctorSpecialty(doctor: UserEntity): string {
     const specialty = doctor.specialite || (doctor as any).speciality || (doctor as any).specialiteMedecin;
-    return specialty || 'Medecine generale';
+    return specialty || 'Médecine générale';
   }
 
   getDoctorLocation(doctor: UserEntity): string {
-    return doctor.ville || (doctor.gouvernerat as any) || 'Localisation non renseignee';
+    return doctor.ville || (doctor.gouvernerat as any) || 'Localisation non renseignée';
   }
 
   getDoctorAvailabilityLabel(doctor: UserEntity): string {
+    const creneaux = this.planning[this.slotKey(doctor.id, this.selectedDate)];
+    if (creneaux && creneaux.fermeture) {
+      return creneaux.fermeture === 'conge' ? 'En congé ce jour' : 'Ne consulte pas ce jour';
+    }
     const available = this.getAvailableSlotsForDoctor(doctor, this.selectedDate).length;
 
     if (available === 0) {
-      return 'Journee chargee';
+      return 'Journée complète';
     }
 
     if (available <= 3) {
@@ -312,15 +323,37 @@ export class DemandeRendezVousComponent implements OnInit {
 
   getMeetingLocation(doctor: UserEntity | null): string {
     if (!doctor) {
-      return 'A definir';
+      return 'À définir';
     }
 
     const location = this.getDoctorLocation(doctor);
-    return location === 'Localisation non renseignee' ? 'Cabinet ou confirmation par email' : location;
+    return location === 'Localisation non renseignée' ? 'Cabinet ou confirmation par email' : location;
+  }
+
+  /** The doctor's opening-hour slots on that day (empty while loading or when closed). */
+  slotsFor(doctor: UserEntity, dateValue: string): string[] {
+    const creneaux = doctor ? this.planning[this.slotKey(doctor.id, dateValue)] : null;
+    return creneaux ? creneaux.slots : [];
+  }
+
+  get selectedDoctorSlots(): string[] {
+    return this.selectedDoctor ? this.slotsFor(this.selectedDoctor, this.selectedDate) : [];
+  }
+
+  /** Why the selected doctor has no slot that day (day off, not a working day), or ''. */
+  get selectedClosedLabel(): string {
+    return this.selectedDoctor
+      ? PlanningService.closedLabel(this.planning[this.slotKey(this.selectedDoctor.id, this.selectedDate)])
+      : '';
+  }
+
+  get meetingDuration(): string {
+    const creneaux = this.selectedDoctor ? this.planning[this.slotKey(this.selectedDoctor.id, this.selectedDate)] : null;
+    return (creneaux ? creneaux.dureeCreneau : 30) + ' min';
   }
 
   getAvailableSlotsForDoctor(doctor: UserEntity, dateValue: string): string[] {
-    return this.heures.filter((slot) => !this.isSlotUnavailableForDoctor(doctor, dateValue, slot));
+    return this.slotsFor(doctor, dateValue).filter((slot) => !this.isSlotUnavailableForDoctor(doctor, dateValue, slot));
   }
 
   isSlotUnavailableForDoctor(doctor: UserEntity, dateValue: string, slot: string): boolean {

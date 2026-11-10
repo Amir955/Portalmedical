@@ -87,6 +87,35 @@ public class RendezVousControllers {
 		return rendezVousServices.takenSlots(medecinId, date);
 	}
 
+	/** Public: what the patient's cancel link points to (no personal data beyond the doctor's name). */
+	@GetMapping("/annulation/{token}")
+	public Map<String, Object> annulation(@PathVariable String token) {
+		RendezVousEntity rdv = rendezVousServices.findByCancelToken(token);
+		if (rdv == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+		return cancelView(rdv);
+	}
+
+	/** Public: the patient cancels from the link in their e-mail. */
+	@PostMapping("/annulation/{token}")
+	public Map<String, Object> annuler(@PathVariable String token) {
+		return cancelView(rendezVousServices.cancelByPatient(token));
+	}
+
+	private static Map<String, Object> cancelView(RendezVousEntity rdv) {
+		Map<String, Object> view = new java.util.LinkedHashMap<>();
+		view.put("dateOfApt", rdv.getDateOfApt());
+		view.put("etat", rdv.getStateapt());
+		view.put("passe", rdv.getDateOfApt() != null && rdv.getDateOfApt().before(new Date()));
+		if (rdv.getUser() != null) {
+			view.put("medecin", ("Dr " + (rdv.getUser().getPrenom() == null ? "" : rdv.getUser().getPrenom()) + " "
+					+ (rdv.getUser().getNom() == null ? "" : rdv.getUser().getNom())).trim());
+			view.put("telephone", rdv.getUser().getNumtelephone());
+		}
+		return view;
+	}
+
 	/** Pending requests of the signed-in doctor, or of the doctor a secretary works for. */
 	@GetMapping("/demandes")
 	public List<RendezVousEntity> demandes() {

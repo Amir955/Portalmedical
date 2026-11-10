@@ -6,7 +6,7 @@ import { AccountService } from '../services/account.service';
 import { UserEntity } from 'src/models/userEntity';
 import { GOUVERNORATS } from 'src/models/gouvernorats';
 
-type ProfileSection = 'infos' | 'password' | 'secretariat';
+type ProfileSection = 'infos' | 'password' | 'horaires' | 'secretariat';
 
 /** "Mon compte": personal details, password, and (doctors) their secretaries. */
 @Component({
@@ -51,7 +51,8 @@ export class ProfileComponent implements OnInit {
   private buildSections(): void {
     this.sections = [
       { value: 'infos', label: 'Mes informations', hint: 'Identité et coordonnées', icon: 'badge' },
-      { value: 'password', label: 'Mot de passe', hint: 'Changer votre mot de passe', icon: 'lock' }
+      { value: 'password', label: 'Mot de passe', hint: 'Changer votre mot de passe', icon: 'lock' },
+      { value: 'horaires', label: 'Horaires du cabinet', hint: 'Jours, heures et congés', icon: 'schedule' }
     ];
     if (this.isDoctor) {
       this.sections.push({ value: 'secretariat', label: 'Mon secrétariat', hint: 'Comptes de vos secrétaires', icon: 'support_agent' });
@@ -69,7 +70,8 @@ export class ProfileComponent implements OnInit {
     // Follow ?section= (also when the sidebar links change it while on this page).
     this.route.queryParamMap.subscribe((params) => {
       const requested = params.get('section') as ProfileSection;
-      this.section = requested === 'password' || (requested === 'secretariat' && this.isDoctor) ? requested : 'infos';
+      this.section = requested === 'password' || requested === 'horaires' || (requested === 'secretariat' && this.isDoctor)
+        ? requested : 'infos';
     });
     this.loadProfile();
   }

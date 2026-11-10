@@ -9,6 +9,7 @@ import { UserEntity } from '../../models/userEntity';
 import { AccountService } from '../services/account.service';
 import { DemandesNotificationService } from '../services/demandes-notification.service';
 import { PatientService } from '../services/patient.service';
+import { PlanningService } from '../services/planning.service';
 import { RendezVousService } from '../services/rendez-vous.service';
 
 type PatientMode = 'existing' | 'new';
@@ -20,10 +21,10 @@ type PatientMode = 'existing' | 'new';
   styleUrls: ['./calender.component.css']
 })
 export class CalenderComponent implements OnInit {
-  readonly slots = [
-    '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'
-  ];
+  /** The doctor's opening-hour slots for the date chosen in a dialog. */
+  daySlots: string[] = [];
+  /** Why that day has no slot (day off, not a working day), or ''. */
+  closedLabel = '';
 
   calendarOptions: CalendarOptions = this.buildCalendarOptions();
   appointments: RendezVousEntity[] = [];
@@ -52,6 +53,7 @@ export class CalenderComponent implements OnInit {
               private rdvService: RendezVousService,
               private userService: AccountService,
               private patientService: PatientService,
+              private planningService: PlanningService,
               private notifications: DemandesNotificationService,
               private toastr: ToastrService,
               private route: ActivatedRoute,
@@ -188,9 +190,22 @@ export class CalenderComponent implements OnInit {
     const doctorId = form.get('doctorId').value;
     const date = form.get('date').value;
     this.takenSlots = [];
+    this.daySlots = [];
+    this.closedLabel = '';
     if (!doctorId || !date) {
       return;
     }
+    this.planningService.getCreneaux(doctorId, date).subscribe((creneaux) => {
+      const slots = creneaux.slots.slice();
+      // An appointment being moved keeps its current time in the list.
+      const own = form === this.editForm && this.editing ? this.toTimeValue(new Date(this.editing.dateOfApt)) : '';
+      if (own && this.isOwnSlot(form, own) && slots.indexOf(own) === -1) {
+        slots.push(own);
+        slots.sort();
+      }
+      this.daySlots = slots;
+      this.closedLabel = slots.length ? '' : PlanningService.closedLabel(creneaux);
+    });
     this.rdvService.getTakenSlots(doctorId, date).subscribe((slots) => {
       this.takenSlots = slots || [];
       const chosen = form.get('slot').value;

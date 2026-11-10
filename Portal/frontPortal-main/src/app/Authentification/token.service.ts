@@ -142,6 +142,7 @@ export class TokenService {
       || url === '/login'
       || url === '/inscription'
       || url === '/demandeRDV'
-      || url.startsWith('/resetPassword/');
+      || url.startsWith('/resetPassword/')
+      || url.startsWith('/annuler/');
   }
 }

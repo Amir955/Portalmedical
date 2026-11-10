@@ -1,0 +1,122 @@
+<section class="portal-card ps-card">
+  <header class="ps-head">
+    <h2>Horaires du cabinet</h2>
+    <p>Les patients ne peuvent demander un rendez-vous que sur ces créneaux, et le calendrier ne propose qu’eux.</p>
+  </header>
+
+  <div class="ps-state" *ngIf="loading">Chargement…</div>
+
+  <div class="form-alert form-alert--warning" *ngIf="!loading && unavailable">
+    <mat-icon aria-hidden="true">info</mat-icon>
+    <span>{{ unavailable }}</span>
+  </div>
+
+  <ng-container *ngIf="!loading && !unavailable">
+    <div class="form-alert" role="alert" *ngIf="formError">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span><strong>Horaires non enregistrés</strong>{{ formError }}</span>
+    </div>
+
+    <p class="pm-form-group">Durée d’un rendez-vous</p>
+    <div class="ps-durations" role="radiogroup" aria-label="Durée d’un rendez-vous">
+      <button type="button" *ngFor="let minutes of durations" class="ps-duration" role="radio"
+              [class.is-active]="dureeCreneau === minutes" [attr.aria-checked]="dureeCreneau === minutes"
+              (click)="setDuration(minutes)">
+        {{ minutes }} min
+      </button>
+    </div>
+
+    <div class="ps-week-head">
+      <p class="pm-form-group">Semaine type</p>
+      <button type="button" class="ps-link" (click)="copyMonday()">
+        <mat-icon>content_copy</mat-icon>Copier le lundi sur la semaine
+      </button>
+    </div>
+
+    <div class="ps-week">
+      <div class="ps-day" *ngFor="let jour of jours" [class.is-closed]="!jour.actif">
+        <div class="ps-day__name">
+          <button type="button" class="ps-switch" role="switch" [attr.aria-checked]="jour.actif"
+                  [attr.aria-label]="dayName(jour) + (jour.actif ? ', ouvert' : ', fermé')" (click)="toggleDay(jour)">
+            <span class="ps-switch__knob"></span>
+          </button>
+          <span>
+            <strong>{{ dayName(jour) }}</strong>
+            <small>{{ summary(jour) }}</small>
+          </span>
+        </div>
+
+        <div class="ps-day__hours" *ngIf="jour.actif">
+          <label class="ps-range">
+            <span>Matin</span>
+            <input type="time" [(ngModel)]="jour.debutMatin" [attr.aria-label]="dayName(jour) + ' matin, début'">
+            <em>–</em>
+            <input type="time" [(ngModel)]="jour.finMatin" [attr.aria-label]="dayName(jour) + ' matin, fin'">
+          </label>
+          <label class="ps-range">
+            <span>Après-midi</span>
+            <input type="time" [(ngModel)]="jour.debutApresMidi" [attr.aria-label]="dayName(jour) + ' après-midi, début'">
+            <em>–</em>
+            <input type="time" [(ngModel)]="jour.finApresMidi" [attr.aria-label]="dayName(jour) + ' après-midi, fin'">
+          </label>
+        </div>
+        <div class="ps-day__closed" *ngIf="!jour.actif">Fermé</div>
+      </div>
+    </div>
+    <p class="ps-hint">Laissez la matinée ou l’après-midi vide pour une demi-journée.</p>
+
+    <div class="pm-dialog-actions">
+      <button type="button" class="pm-btn pm-btn--primary" [disabled]="saving" (click)="save()">
+        {{ saving ? 'Enregistrement…' : 'Enregistrer les horaires' }}
+      </button>
+    </div>
+  </ng-container>
+</section>
+
+<section class="portal-card ps-card" *ngIf="!loading && !unavailable">
+  <header class="ps-head">
+    <h2>Congés et fermetures</h2>
+    <p>Pendant ces périodes, aucun créneau n’est proposé, ni en ligne ni dans le calendrier.</p>
+  </header>
+
+  <ul class="ps-conges" *ngIf="conges.length; else noConge">
+    <li *ngFor="let conge of conges" class="ps-conge">
+      <span class="ps-conge__icon"><mat-icon>beach_access</mat-icon></span>
+      <span class="ps-conge__text">
+        <strong *ngIf="conge.dateDebut === conge.dateFin">Le {{ conge.dateDebut | date:'EEEE d MMMM yyyy' }}</strong>
+        <strong *ngIf="conge.dateDebut !== conge.dateFin">
+          Du {{ conge.dateDebut | date:'d MMMM' }} au {{ conge.dateFin | date:'d MMMM yyyy' }}
+        </strong>
+        <span>{{ congeDays(conge) }} jour(s)<ng-container *ngIf="conge.motif"> · {{ conge.motif }}</ng-container></span>
+      </span>
+      <button type="button" class="pm-icon-btn pm-icon-btn--danger" (click)="removeConge(conge)"
+              matTooltip="Supprimer" aria-label="Supprimer ce congé">
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </li>
+  </ul>
+  <ng-template #noConge><p class="ps-state">Aucun congé prévu.</p></ng-template>
+
+  <div class="form-alert" role="alert" *ngIf="congeError">
+    <mat-icon aria-hidden="true">error_outline</mat-icon>
+    <span>{{ congeError }}</span>
+  </div>
+
+  <div class="ps-add">
+    <label class="ps-field">
+      <span>Du</span>
+      <input type="date" [(ngModel)]="newConge.dateDebut" [min]="today">
+    </label>
+    <label class="ps-field">
+      <span>Au</span>
+      <input type="date" [(ngModel)]="newConge.dateFin" [min]="newConge.dateDebut || today">
+    </label>
+    <label class="ps-field ps-field--grow">
+      <span>Motif <em>(facultatif)</em></span>
+      <input type="text" [(ngModel)]="newConge.motif" maxlength="80" placeholder="Vacances, formation…">
+    </label>
+    <button type="button" class="pm-btn pm-btn--secondary" [disabled]="addingConge" (click)="addConge()">
+      <mat-icon>add</mat-icon>Ajouter
+    </button>
+  </div>
+</section>

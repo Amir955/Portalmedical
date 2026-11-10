@@ -22,12 +22,14 @@ import { AuthGuard } from './Authentification/guards/auth.guard';
 import { DoctorGuard } from './Authentification/guards/doctor.guard';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { AnnulationComponent } from './annulation/annulation.component';
 
 const routes: Routes = [
   { path: '', component: AcceuilComponent},
   { path: 'login', component: HomeComponent},
   { path: 'inscription', component: InscriptionComponent },
   { path: 'demandeRDV', component: DemandeRendezVousComponent},
+  { path: 'annuler/:token', component: AnnulationComponent },
   { path: 'tableau-de-bord', component: DashboardComponent, canActivate: [AuthGuard] },
   {path:'calender', component: CalenderComponent, canActivate: [AuthGuard]},
   {path:'listeRDV', component: ListeRendezVousComponent, canActivate: [AuthGuard]},

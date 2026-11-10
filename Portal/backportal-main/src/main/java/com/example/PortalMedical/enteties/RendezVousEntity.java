@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -44,7 +45,9 @@ public class RendezVousEntity implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private StateApt stateapt;
 	public enum StateApt {
-		   waiting , confirmed , refused , demande	 
+		   waiting , confirmed , refused , demande ,
+		   /** Cancelled by the patient from the link in their e-mail. */
+		   cancelled
 		}
 	
 	@OneToOne
@@ -64,6 +67,31 @@ public class RendezVousEntity implements Serializable {
 
 	@Temporal(TemporalType.DATE)
 	private Date patientDateNaissance;
+
+	/** Private code in the patient's "Annuler mon rendez-vous" link (never exposed in lists). */
+	@Column(unique = true, length = 64)
+	@JsonIgnore
+	private String jetonAnnulation;
+
+	/** True once the reminder of the day before has been sent. */
+	@JsonIgnore
+	private Boolean rappelEnvoye;
+
+	public String getJetonAnnulation() {
+		return jetonAnnulation;
+	}
+
+	public void setJetonAnnulation(String jetonAnnulation) {
+		this.jetonAnnulation = jetonAnnulation;
+	}
+
+	public Boolean getRappelEnvoye() {
+		return rappelEnvoye;
+	}
+
+	public void setRappelEnvoye(Boolean rappelEnvoye) {
+		this.rappelEnvoye = rappelEnvoye;
+	}
 
 	public String getPatientNom() {
 		return patientNom;

@@ -27,4 +27,9 @@ public interface RendezVousRepository extends JpaRepository<RendezVousEntity, Lo
 
 	/** Most recent appointment of a patient (used to find the patient's doctor). */
 	RendezVousEntity findFirstByPatient_IdOrderByDateOfAptDesc(long patientId);
+
+	/** Appointments in one state within [start, end) (the reminders of tomorrow). */
+	List<RendezVousEntity> findByStateaptAndDateOfAptGreaterThanEqualAndDateOfAptLessThan(StateApt state, Date start, Date end);
+
+	RendezVousEntity findFirstByJetonAnnulation(String jetonAnnulation);
 }

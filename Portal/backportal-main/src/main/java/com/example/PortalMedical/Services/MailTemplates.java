@@ -103,7 +103,8 @@ public final class MailTemplates {
         return new Mail(subject, html, text);
     }
 
-    public static Mail appointmentConfirmed(String patientPrenom, Date date, String doctor, String doctorPhone) {
+    public static Mail appointmentConfirmed(String patientPrenom, Date date, String doctor, String doctorPhone,
+            String cancelLink) {
         String day = formatDay(date);
         String time = formatTime(date);
         String subject = "Rendez-vous confirmé le " + day + " à " + time;
@@ -116,7 +117,7 @@ public final class MailTemplates {
                 + list("Présentez-vous 10 minutes avant l'heure du rendez-vous.",
                         "Munissez-vous de votre pièce d'identité et, le cas échéant, de votre carte d'assurance maladie.",
                         "Apportez vos ordonnances en cours et vos derniers résultats d'analyses ou examens.")
-                + paragraph(contactLine(doctorPhone, "Un empêchement ? Merci de prévenir le cabinet au plus tôt"));
+                + cancelBlock(doctorPhone, cancelLink);
 
         String html = layout("Votre rendez-vous du " + day + " à " + time + " est confirmé.",
                 "check", "Votre rendez-vous est confirmé", body);
@@ -130,7 +131,61 @@ public final class MailTemplates {
                 + "- présentez-vous 10 minutes avant l'heure du rendez-vous ;\n"
                 + "- munissez-vous de votre pièce d'identité et, le cas échéant, de votre carte d'assurance maladie ;\n"
                 + "- apportez vos ordonnances en cours et vos derniers résultats d'analyses ou examens.\n\n"
-                + contactLineText(doctorPhone, "Un empêchement ? Merci de prévenir le cabinet au plus tôt") + "\n\n"
+                + cancelText(doctorPhone, cancelLink) + "\n\n"
+                + signatureText();
+
+        return new Mail(subject, html, text);
+    }
+
+    /** Sent the evening before a confirmed appointment. */
+    public static Mail appointmentReminder(String patientPrenom, Date date, String doctor, String doctorPhone,
+            String cancelLink) {
+        String day = formatDay(date);
+        String time = formatTime(date);
+        String subject = "Rappel : votre rendez-vous demain à " + time;
+
+        String body = paragraph(greeting(patientPrenom, true))
+                + paragraph("Petit rappel : vous avez rendez-vous <strong>demain à " + esc(time) + "</strong>.")
+                + detailsCard(day, time, doctor, "Demain", ACCENT_STRONG)
+                + list("Présentez-vous 10 minutes avant l'heure du rendez-vous.",
+                        "Pensez à votre pièce d'identité et à vos derniers documents médicaux.")
+                + cancelBlock(doctorPhone, cancelLink);
+
+        String html = layout("Rappel : rendez-vous demain à " + time + ".", "info-soft", "Votre rendez-vous de demain", body);
+
+        String text = greeting(patientPrenom, false) + "\n\n"
+                + "Petit rappel : vous avez rendez-vous demain à " + time + ".\n\n"
+                + "Date : " + day + "\n"
+                + "Heure : " + time + "\n"
+                + (doctor == null ? "" : "Médecin : " + doctor + "\n")
+                + "\nPrésentez-vous 10 minutes avant l'heure du rendez-vous, avec votre pièce d'identité "
+                + "et vos derniers documents médicaux.\n\n"
+                + cancelText(doctorPhone, cancelLink) + "\n\n"
+                + signatureText();
+
+        return new Mail(subject, html, text);
+    }
+
+    /** Tells the doctor that a patient cancelled from the link in their e-mail. */
+    public static Mail patientCancelledNotice(String doctorPrenom, String patientName, Date date) {
+        String day = formatDay(date);
+        String time = formatTime(date);
+        String who = hasText(patientName) ? patientName : "Un patient";
+        String subject = "Rendez-vous annulé : " + who + ", " + day + " à " + time;
+
+        String body = paragraph(greeting(doctorPrenom, true))
+                + paragraph("<strong>" + esc(who) + "</strong> a annulé son rendez-vous depuis le lien reçu par e-mail.")
+                + detailsCard(day, time, null, "Annulé par le patient", DANGER)
+                + paragraph("Le créneau est de nouveau disponible pour une autre demande.")
+                + button("Ouvrir le calendrier", APP_URL + "/calender", ACCENT_STRONG);
+
+        String html = layout(who + " a annulé son rendez-vous du " + day + " à " + time + ".",
+                "info", "Rendez-vous annulé", body);
+
+        String text = greeting(doctorPrenom, false) + "\n\n"
+                + who + " a annulé son rendez-vous du " + day + " à " + time
+                + " depuis le lien reçu par e-mail.\n"
+                + "Le créneau est de nouveau disponible.\n\n"
                 + signatureText();
 
         return new Mail(subject, html, text);
@@ -262,6 +317,32 @@ public final class MailTemplates {
                 + label + "</a></td></tr></table>";
     }
 
+    /** "Un empêchement ?" line, with a cancel button when the appointment has a cancel link. */
+    private static String cancelBlock(String doctorPhone, String cancelLink) {
+        if (!hasText(cancelLink)) {
+            return paragraph(contactLine(doctorPhone, "Un empêchement ? Merci de prévenir le cabinet au plus tôt"));
+        }
+        return paragraph("Un empêchement ? Annulez en un clic : le créneau sera libéré pour un autre patient.")
+                + outlineButton("Annuler mon rendez-vous", cancelLink)
+                + (hasText(doctorPhone) ? paragraph(contactLine(doctorPhone, "Vous pouvez aussi appeler le cabinet")) : "");
+    }
+
+    private static String cancelText(String doctorPhone, String cancelLink) {
+        if (!hasText(cancelLink)) {
+            return contactLineText(doctorPhone, "Un empêchement ? Merci de prévenir le cabinet au plus tôt");
+        }
+        return "Un empêchement ? Annulez votre rendez-vous ici : " + cancelLink
+                + (hasText(doctorPhone) ? "\n" + contactLineText(doctorPhone, "Vous pouvez aussi appeler le cabinet") : "");
+    }
+
+    private static String outlineButton(String label, String href) {
+        return "<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0 0 20px;\"><tr>"
+                + "<td style=\"border-radius:10px;border:1px solid " + BORDER + ";background:#ffffff;\">"
+                + "<a href=\"" + esc(href) + "\" target=\"_blank\" style=\"display:inline-block;padding:11px 22px;"
+                + FONT + "font-size:14px;font-weight:700;color:" + DANGER + ";text-decoration:none;border-radius:10px;\">"
+                + label + "</a></td></tr></table>";
+    }
+
     private static String notice(String html) {
         return "<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0 0 20px;\"><tr>"
                 + "<td style=\"padding:12px 16px;border-left:4px solid " + ACCENT + ";background:#eefaf8;border-radius:6px;"
@@ -314,6 +395,11 @@ public final class MailTemplates {
                 symbol = "i";
                 color = DANGER;
                 background = "#fbecec";
+                break;
+            case "info-soft":
+                symbol = "J-1";
+                color = PRIMARY;
+                background = "#e8eef6";
                 break;
             default:
                 symbol = "&#8635;";

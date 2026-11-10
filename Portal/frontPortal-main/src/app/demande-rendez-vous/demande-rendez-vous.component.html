@@ -178,14 +178,14 @@
           <div class="slot-list-card">
             <div class="slot-list-card__head">
               <strong>Heures disponibles</strong>
-              <span>{{ getSelectedDoctorAvailableSlots().length }} libre(s) sur {{ heures.length }}</span>
+              <span *ngIf="selectedDoctorSlots.length">{{ getSelectedDoctorAvailableSlots().length }} libre(s) sur {{ selectedDoctorSlots.length }}</span>
             </div>
 
             <div class="slot-list-scroll" *ngIf="getSelectedDoctorAvailableSlots().length; else noSlotsAvailable">
               <button
                 type="button"
                 class="slot-row"
-                *ngFor="let slot of heures"
+                *ngFor="let slot of selectedDoctorSlots"
                 [class.is-selected]="selectedSlot === slot"
                 [class.is-unavailable]="getSlotStatus(slot)"
                 [disabled]="getSlotStatus(slot)"
@@ -284,21 +284,22 @@
 <ng-template #emptyScheduler>
   <section class="booking-empty">
     <img src="assets/img/logo.svg" alt="PortalMedical" class="booking-empty__logo">
-    <p class="panel-kicker">Selection</p>
+    <p class="panel-kicker">Sélection</p>
     <h2>Choisissez d'abord un médecin</h2>
-    <p>Son calendrier et ses heures disponibles apparaitront ici automatiquement.</p>
+    <p>Son calendrier et ses heures disponibles apparaîtront ici automatiquement.</p>
   </section>
 </ng-template>
 
 <ng-template #noDoctorResult>
   <div class="empty-state">
     <h3>Aucun médecin ne correspond aux filtres</h3>
-    <p>Essayez une autre orthographe, une autre ville ou reinitialisez les filtres.</p>
+    <p>Essayez une autre orthographe, une autre ville ou réinitialisez les filtres.</p>
   </div>
 </ng-template>
 
 <ng-template #noSlotsAvailable>
   <div class="slot-empty">
-    Aucun créneau libre pour cette date. Essayez un autre jour dans le calendrier.
+    <ng-container *ngIf="selectedClosedLabel; else fullDay">{{ selectedClosedLabel }} Choisissez un autre jour dans le calendrier.</ng-container>
+    <ng-template #fullDay>Aucun créneau libre pour cette date. Essayez un autre jour dans le calendrier.</ng-template>
   </div>
 </ng-template>

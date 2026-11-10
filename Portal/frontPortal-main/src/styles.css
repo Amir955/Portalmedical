@@ -1697,3 +1697,52 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Patient cancellation page (/annuler/:token) */
+.cancel-card {
+  display: grid;
+  gap: 0.1rem;
+  margin: 1.5rem 0 1.25rem;
+  border: 1px solid var(--portal-border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.cancel-card > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  background: #ffffff;
+}
+
+.cancel-card > div + div {
+  border-top: 1px solid var(--portal-border);
+}
+
+.cancel-card span {
+  color: var(--portal-muted);
+  font-size: var(--portal-text-sm);
+}
+
+.cancel-card strong {
+  color: var(--portal-primary);
+  text-align: right;
+}
+
+.cancel-card__cap {
+  text-transform: capitalize;
+}
+
+.auth-primary.cancel-danger {
+  background: var(--portal-danger);
+  box-shadow: 0 14px 26px rgba(180, 52, 52, 0.22);
+}
+
+.auth-primary.cancel-danger:hover:not(:disabled) {
+  background: #962b2b;
+}
+
+.cancel-keep {
+  margin-top: 0.6rem;
+}

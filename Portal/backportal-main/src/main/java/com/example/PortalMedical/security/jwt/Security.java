@@ -48,6 +48,9 @@ public class Security extends WebSecurityConfigurerAdapter  {
                 .antMatchers(HttpMethod.GET, "/user/getbyRole/Medecin").permitAll()
                 // Taken times only (no patient data) for the public appointment-request page
                 .antMatchers(HttpMethod.GET, "/rendezvous/creneauxPris/**").permitAll()
+                // Public: a doctor's bookable times (planning), and the patient's cancel link
+                .antMatchers(HttpMethod.GET, "/planning/*/creneaux").permitAll()
+                .antMatchers("/rendezvous/annulation/**").permitAll()
                 // Medical records: doctors only
                 .antMatchers("/consultation/**").hasAuthority(MEDECIN)
                 // Everything else: practice staff

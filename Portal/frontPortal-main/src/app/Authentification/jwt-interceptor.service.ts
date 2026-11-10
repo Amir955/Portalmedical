@@ -74,7 +74,9 @@ export class JwtInterceptorService implements HttpInterceptor {
       '/user/resetPassword',
       '/user/getbyRole/Medecin',
       '/rendezvous/demandeRDV',
-      '/rendezvous/creneauxPris/'
+      '/rendezvous/creneauxPris/',
+      '/creneaux',
+      '/rendezvous/annulation/'
     ].some((path) => url.indexOf(path) !== -1);
   }
 

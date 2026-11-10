@@ -57,10 +57,12 @@ import { ListeRendezVousComponent } from './liste-rendez-vous/liste-rendez-vous.
 import { NavbarComponent } from './navbar/navbar.component';
 import { InscriptionComponent } from './inscription/inscription.component';
 import { SecretariatComponent } from './profile/secretariat/secretariat.component';
+import { PlanningSettingsComponent } from './profile/planning-settings/planning-settings.component';
 import localeFr from '@angular/common/locales/fr';
 import { PortalDateAdapter } from './portal-date-adapter';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { AnnulationComponent } from './annulation/annulation.component';
 
 registerLocaleData(localeFr);
 
@@ -96,8 +98,10 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     NavbarComponent,
     InscriptionComponent,
     SecretariatComponent,
+    PlanningSettingsComponent,
     ProfileComponent,
-    DashboardComponent
+    DashboardComponent,
+    AnnulationComponent
 
   ],
   imports: [

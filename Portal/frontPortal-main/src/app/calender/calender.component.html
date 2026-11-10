@@ -100,8 +100,11 @@
       </mat-form-field>
     </div>
 
+    <p class="cal-closed" *ngIf="!daySlots.length">
+      <mat-icon>event_busy</mat-icon>{{ closedLabel || 'Aucun créneau ce jour-là.' }} Choisissez une autre date.
+    </p>
     <div class="cal-slots" role="group" aria-label="Créneau">
-      <button type="button" *ngFor="let slot of slots" class="cal-slot"
+      <button type="button" *ngFor="let slot of daySlots" class="cal-slot"
               [class.is-selected]="addForm.get('slot').value === slot"
               [class.is-off]="isSlotDisabled(addForm, slot)"
               [disabled]="isSlotDisabled(addForm, slot)"
@@ -155,8 +158,11 @@
         </mat-form-field>
       </div>
 
+      <p class="cal-closed" *ngIf="!daySlots.length">
+        <mat-icon>event_busy</mat-icon>{{ closedLabel || 'Aucun créneau ce jour-là.' }} Choisissez une autre date.
+      </p>
       <div class="cal-slots" role="group" aria-label="Créneau">
-        <button type="button" *ngFor="let slot of slots" class="cal-slot"
+        <button type="button" *ngFor="let slot of daySlots" class="cal-slot"
                 [class.is-selected]="editForm.get('slot').value === slot"
                 [class.is-off]="isSlotDisabled(editForm, slot)"
                 [disabled]="isSlotDisabled(editForm, slot)"

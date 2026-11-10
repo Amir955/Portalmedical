@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -41,6 +42,8 @@ public class RendezVousServicesImpl implements RendezVousServices {
 	PasswordServices mailService;
 	@Autowired
 	PatientRepository patientRepository;
+	@Autowired
+	PlanningService planningService;
 	
 	/** A slot is taken while a request is pending or once it is confirmed; refusing frees it. */
 	private static final List<StateApt> BLOCKING_STATES =
@@ -54,6 +57,7 @@ public class RendezVousServicesImpl implements RendezVousServices {
 		}
 		apt.setStateapt(StateApt.confirmed);
 		apt.setUser(user);
+		ensureCancelToken(apt);
 		mailService.EnvoyerEmailAjout(apt);
 		return rvrepo.save(apt);
 	}
@@ -186,6 +190,7 @@ public class RendezVousServicesImpl implements RendezVousServices {
 			rdv.setPatientEmail(apt.getPatientEmail().trim());
 		}
 		rdv = rvrepo.save(rdv);
+		ensureCancelToken(rdv);
 		mailService.EnvoyerEmailAjout(rdv);
 		return rdv;
 	}
@@ -265,6 +270,9 @@ public class RendezVousServicesImpl implements RendezVousServices {
 		if (us.getRole() != Role.Medecin) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown doctor");
 		}
+		if (!planningService.isBookable(us.getId(), apt.getDateOfApt())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Outside the doctor's opening hours");
+		}
 		if (isSlotTaken(us.getId(), apt.getDateOfApt(), 0)) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Slot already taken");
 		}
@@ -297,6 +305,7 @@ public class RendezVousServicesImpl implements RendezVousServices {
 		if (rv.getPatient() == null) {
 			rv.setPatient(linkPatient(rv));
 		}
+		ensureCancelToken(rv);
 		mailService.EnvoyerEmailAjout(rv);
 		return rvrepo.save(rv);
 	}
@@ -309,4 +318,42 @@ public class RendezVousServicesImpl implements RendezVousServices {
 		return rvrepo.save(rv);
 	} 	
 
+
+	/** Gives the appointment its private cancel code (used in the patient's e-mail link). */
+	private static void ensureCancelToken(RendezVousEntity rdv) {
+		if (rdv.getJetonAnnulation() == null) {
+			rdv.setJetonAnnulation(UUID.randomUUID().toString().replace("-", ""));
+		}
+	}
+
+	@Override
+	public RendezVousEntity findByCancelToken(String token) {
+		if (token == null || token.trim().isEmpty()) {
+			return null;
+		}
+		return rvrepo.findFirstByJetonAnnulation(token.trim());
+	}
+
+	@Override
+	public RendezVousEntity cancelByPatient(String token) {
+		RendezVousEntity rdv = findByCancelToken(token);
+		if (rdv == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+		if (rdv.getStateapt() == StateApt.cancelled) {
+			return rdv;
+		}
+		if (rdv.getStateapt() != StateApt.confirmed && rdv.getStateapt() != StateApt.waiting) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "This appointment can no longer be cancelled");
+		}
+		if (rdv.getDateOfApt() != null && rdv.getDateOfApt().before(new Date())) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "This appointment is already past");
+		}
+		rdv.setStateapt(StateApt.cancelled);
+		rdv = rvrepo.save(rdv);
+		String name = (clean(rdv.getPatient() != null ? rdv.getPatient().getPrenom() : rdv.getPatientPrenom()) + " "
+				+ clean(rdv.getPatient() != null ? rdv.getPatient().getNom() : rdv.getPatientNom())).trim();
+		mailService.envoyerAnnulationPatient(rdv, name.isEmpty() ? clean(rdv.getPatientEmail()) : name);
+		return rdv;
+	}
 }

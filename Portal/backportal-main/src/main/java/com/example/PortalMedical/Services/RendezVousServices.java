@@ -37,5 +37,9 @@ public interface RendezVousServices {
 	 /** Confirmed appointments in the same scope as pendingRequestsFor. */
 	 public List<RendezVousEntity> agendaFor(com.example.PortalMedical.enteties.UserEntity current);
 	 /** Appointments in the user's practice, in one state or (null) all states. */
+	 /** The appointment behind a patient cancel link, or null. */
+	 public RendezVousEntity findByCancelToken(String token);
+	 /** Cancels from the patient's e-mail link and notifies the doctor. */
+	 public RendezVousEntity cancelByPatient(String token);
 	 public List<RendezVousEntity> appointmentsFor(com.example.PortalMedical.enteties.UserEntity current, StateApt state);
 }

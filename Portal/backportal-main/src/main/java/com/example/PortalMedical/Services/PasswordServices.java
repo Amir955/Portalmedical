@@ -98,7 +98,45 @@ public class PasswordServices {
                 patientPrenom(rdv),
                 rdv.getDateOfApt(),
                 doctor == null ? null : MailTemplates.doctorName(doctor.getPrenom(), doctor.getNom()),
-                doctor == null ? null : doctor.getNumtelephone()));
+                doctor == null ? null : doctor.getNumtelephone(),
+                cancelLink(rdv)));
+    }
+
+    /**
+     * Reminder of the day before.
+     *
+     * @return true when the e-mail was sent
+     */
+    public boolean envoyerRappel(RendezVousEntity rdv) {
+        UserEntity doctor = rdv.getUser();
+        if (rdv.getPatientEmail() == null || rdv.getPatientEmail().trim().isEmpty()) {
+            return false;
+        }
+        try {
+            send(rdv.getPatientEmail().trim(), MailTemplates.appointmentReminder(
+                    patientPrenom(rdv),
+                    rdv.getDateOfApt(),
+                    doctor == null ? null : MailTemplates.doctorName(doctor.getPrenom(), doctor.getNom()),
+                    doctor == null ? null : doctor.getNumtelephone(),
+                    cancelLink(rdv)));
+            return true;
+        } catch (IllegalStateException | MailException | MessagingException e) {
+            LOG.error("Reminder for appointment {} could not be sent: {}", rdv.getIdapt(), e.getMessage(), e);
+            return false;
+        }
+    }
+
+    /** Tells the doctor that the patient cancelled from the e-mail link. */
+    public void envoyerAnnulationPatient(RendezVousEntity rdv, String patientName) {
+        UserEntity doctor = rdv.getUser();
+        if (doctor == null) {
+            return;
+        }
+        sendQuietly(doctor.getEmail(), MailTemplates.patientCancelledNotice(doctor.getPrenom(), patientName, rdv.getDateOfApt()));
+    }
+
+    private static String cancelLink(RendezVousEntity rdv) {
+        return rdv.getJetonAnnulation() == null ? null : MailTemplates.APP_URL + "/annuler/" + rdv.getJetonAnnulation();
     }
 
     /** Tells the patient the requested slot was not kept. A mail failure never blocks the update. */
