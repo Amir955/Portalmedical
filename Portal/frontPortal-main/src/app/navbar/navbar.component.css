@@ -305,8 +305,14 @@
   top: 0;
   z-index: 100;
   margin-left: var(--pm-sidebar-width, 264px);
-  padding: 1rem 1.5rem 0.25rem;
-  transition: margin-left 0.2s ease;
+  padding: 1rem 1.5rem 0.75rem;
+  /* Same colour as the page, so content never shows around the floating card. */
+  background: var(--portal-background);
+  transition: margin-left 0.2s ease, transform 0.25s ease;
+}
+
+.top.is-hidden {
+  transform: translateY(-100%);
 }
 
 .top-card {

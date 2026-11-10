@@ -62,7 +62,7 @@
 <div class="side-backdrop" *ngIf="menuOpen" (click)="closeMenu()"></div>
 
 <!-- Top bar: notifications, settings, account -->
-<header class="top">
+<header class="top" [class.is-hidden]="topHidden">
   <div class="top-card">
     <button type="button" class="top-icon top-burger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen" aria-label="Ouvrir le menu">
       <mat-icon>menu</mat-icon>

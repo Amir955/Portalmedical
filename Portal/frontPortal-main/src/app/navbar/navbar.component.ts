@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import {TokenService} from "../Authentification/token.service";
 import {Router} from "@angular/router";
 import { Subscription } from 'rxjs';
@@ -21,6 +21,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   menuOpen = false;
   /** Consultation sub-menu in the sidebar (open on its own pages). */
   consultationOpen = false;
+  /** Top bar slides away while scrolling down and comes back when scrolling up. */
+  topHidden = false;
+  private lastScrollY = 0;
   /** Icons-only sidebar on large screens (remembered in this browser). */
   collapsed = false;
   /** Pending appointment requests for the bell, most recently received first. */
@@ -134,6 +137,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
       return;
     }
     this.consultationOpen = !this.consultationOpen;
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    const y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    if (this.menuOpen || y < 100) {
+      this.topHidden = false;
+    } else if (y > this.lastScrollY + 6) {
+      this.topHidden = true;
+    } else if (y < this.lastScrollY - 6) {
+      this.topHidden = false;
+    }
+    this.lastScrollY = y;
   }
 
   toggleCollapsed(): void {
