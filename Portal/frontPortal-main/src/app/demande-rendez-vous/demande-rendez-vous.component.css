@@ -750,6 +750,53 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
+/* Date of birth: typed, or picked in the calendar */
+.birth-field {
+  position: relative;
+  display: block;
+}
+
+.field .birth-field input[type='text'] {
+  padding-right: 3rem;
+}
+
+.birth-field__anchor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px !important;
+  min-height: 0 !important;
+  height: 1px;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.birth-field__toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--portal-muted);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.birth-field__toggle:hover,
+.birth-field__toggle:focus-visible {
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent-strong);
+  outline: none;
+}
+
 /* Days off and closed days in the calendar */
 :host ::ng-deep .calendar-frame .cal-conge > .mat-calendar-body-cell-content {
   border: 1px dashed #f6b152 !important;

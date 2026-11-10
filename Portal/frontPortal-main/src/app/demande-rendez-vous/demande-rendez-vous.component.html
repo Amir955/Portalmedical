@@ -245,8 +245,16 @@
 
               <label class="field">
                 <span>Date de naissance</span>
-                <input type="text" inputmode="numeric" autocomplete="bday" placeholder="jj/mm/aaaa" maxlength="10"
-                       [value]="birthText" (input)="onBirthInput($event)" (blur)="onBirthBlur()" aria-label="Date de naissance (jour, mois, année)">
+                <span class="birth-field">
+                  <input type="text" inputmode="numeric" autocomplete="bday" placeholder="jj/mm/aaaa" maxlength="10"
+                         [value]="birthText" (input)="onBirthInput($event)" (blur)="onBirthBlur()" aria-label="Date de naissance (jour, mois, année)">
+                  <input class="birth-field__anchor" [matDatepicker]="birthPicker" [max]="maxBirthDate" [min]="minBirthDate"
+                         (dateChange)="onBirthPicked($event.value)" tabindex="-1" aria-hidden="true">
+                  <button type="button" class="birth-field__toggle" (click)="birthPicker.open()" aria-label="Choisir dans le calendrier">
+                    <mat-icon>calendar_month</mat-icon>
+                  </button>
+                  <mat-datepicker #birthPicker startView="multi-year" [startAt]="birthStartAt" [touchUi]="true"></mat-datepicker>
+                </span>
                 <small class="field-error" *ngIf="birthError">{{ birthError }}</small>
                 <small class="field-error" *ngIf="!birthError && hasError('patientDateNaissance')">La date de naissance est requise.</small>
               </label>

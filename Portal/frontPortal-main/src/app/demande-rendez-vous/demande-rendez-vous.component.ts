@@ -87,6 +87,29 @@ export class DemandeRendezVousComponent implements OnInit {
   /** Date of birth as typed ("jj/mm/aaaa"); the form keeps yyyy-MM-dd once it is complete and valid. */
   birthText = '';
   birthError = '';
+  readonly maxBirthDate = new Date();
+  readonly minBirthDate = new Date(1900, 0, 1);
+
+  /** The picker opens on the typed date, or around 1990 to keep the year list short. */
+  get birthStartAt(): Date {
+    const control = this.ajoutRDVform.get('patientDateNaissance');
+    return control && control.value ? new Date(control.value + 'T00:00:00') : new Date(1990, 0, 1);
+  }
+
+  /** Date chosen in the calendar: shown as jj/mm/aaaa in the field. */
+  onBirthPicked(date: Date | null): void {
+    if (!date) {
+      return;
+    }
+    const pad = (n: number) => (n < 10 ? '0' + n : String(n));
+    this.birthText = `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+    this.birthError = '';
+    const control = this.ajoutRDVform.get('patientDateNaissance');
+    if (control) {
+      control.setValue(this.toDateInputValue(date));
+      control.markAsTouched();
+    }
+  }
 
   /** Types digits only; the slashes are added automatically. */
   onBirthInput(event: Event): void {

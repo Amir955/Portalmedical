@@ -1752,3 +1752,32 @@ img {
 .cdk-overlay-container {
   z-index: 20000;
 }
+
+/* Touch date pickers (date of birth on the booking page): centered calendar without inner scrollbars */
+.mat-datepicker-dialog .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.mat-datepicker-dialog .mat-datepicker-content-touch {
+  display: block;
+  max-height: none;
+  margin: 0;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.mat-datepicker-dialog .mat-calendar-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.mat-datepicker-dialog .mat-datepicker-content-touch .mat-calendar {
+  box-sizing: border-box;
+  width: min(360px, 90vw);
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  padding-bottom: 0.5rem;
+}
