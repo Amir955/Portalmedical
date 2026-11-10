@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Patient } from 'src/models/Patient';
 import { PatientService } from '../services/patient.service';
@@ -28,6 +29,7 @@ export class GestionDesPatientsComponent implements OnInit, AfterViewInit {
   constructor(private patientService: PatientService,
               private toast: ToastrService,
               private dialog: MatDialog,
+              private route: ActivatedRoute,
               paginatorIntl: MatPaginatorIntl) {
     paginatorIntl.itemsPerPageLabel = 'Patients par page';
     paginatorIntl.nextPageLabel = 'Page suivante';
@@ -58,6 +60,11 @@ export class GestionDesPatientsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    // Search typed in the top bar arrives as ?q=.
+    this.route.queryParamMap.subscribe((params) => {
+      this.search = params.get('q') || '';
+      this.applyFilter();
+    });
     this.load();
   }
 

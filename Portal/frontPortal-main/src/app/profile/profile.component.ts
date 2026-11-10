@@ -66,10 +66,11 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.isDoctor = this.tokenService.getUserRole() === 'Medecin';
     this.buildSections();
-    const requested = this.route.snapshot.queryParamMap.get('section') as ProfileSection;
-    if (requested === 'password' || (requested === 'secretariat' && this.isDoctor)) {
-      this.section = requested;
-    }
+    // Follow ?section= (also when the sidebar links change it while on this page).
+    this.route.queryParamMap.subscribe((params) => {
+      const requested = params.get('section') as ProfileSection;
+      this.section = requested === 'password' || (requested === 'secretariat' && this.isDoctor) ? requested : 'infos';
+    });
     this.loadProfile();
   }
 

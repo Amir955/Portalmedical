@@ -1663,7 +1663,8 @@ img {
    ========================================================================== */
 
 :root {
-  --pm-sidebar-width: 248px;
+  /* Set by the sidebar: 264px, or 84px when collapsed. */
+  --pm-sidebar-width: 264px;
 }
 
 @media (min-width: 992px) {

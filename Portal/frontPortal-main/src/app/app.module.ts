@@ -24,6 +24,7 @@ import {MatCardModule} from "@angular/material/card";
 import { ToastrModule } from 'ngx-toastr';
 import { PageAdminComponent } from './page-admin/page-admin.component';
 import {MatMenuModule} from "@angular/material/menu";
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CalendrierComponent } from './calendrier/calendrier.component';
 import { FichesPatientsComponent } from './fiches-patients/fiches-patients.component';
 import { OrdonnancesComponent } from './ordonnances/ordonnances.component';
@@ -126,6 +127,7 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     MatIconModule,
     MatExpansionModule,
     MatMenuModule,
+    MatTooltipModule,
     MatToolbarModule,
     MatTableModule,
     MatPaginatorModule,

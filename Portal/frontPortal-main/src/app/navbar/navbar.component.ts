@@ -21,6 +21,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   menuOpen = false;
   /** Consultation sub-menu in the sidebar (open on its own pages). */
   consultationOpen = false;
+  /** Icons-only sidebar on large screens (remembered in this browser). */
+  collapsed = false;
   /** Pending appointment requests for the bell, most recently received first. */
   pending: RendezVousEntity[] = [];
   private readIds = new Set<number>();
@@ -42,6 +44,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadUser();
     this.consultationOpen = this.consultationActive;
+    this.collapsed = this.readCollapsed();
+    this.applySidebarWidth();
     this.subscriptions = [
       this.notifications.pending$.subscribe((list) => this.pending = list),
       this.notifications.read$.subscribe((ids) => this.readIds = ids)
@@ -124,7 +128,35 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   toggleConsultation(): void {
+    if (this.collapsed) {
+      this.toggleCollapsed();
+      this.consultationOpen = true;
+      return;
+    }
     this.consultationOpen = !this.consultationOpen;
+  }
+
+  toggleCollapsed(): void {
+    this.collapsed = !this.collapsed;
+    try {
+      localStorage.setItem('pm-sidebar-collapsed', this.collapsed ? '1' : '0');
+    } catch (e) {
+      // Storage unavailable: the choice lasts for this page only.
+    }
+    this.applySidebarWidth();
+  }
+
+  private readCollapsed(): boolean {
+    try {
+      return localStorage.getItem('pm-sidebar-collapsed') === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /** The page content is offset by this variable (styles.css, "App layout"). */
+  private applySidebarWidth(): void {
+    document.documentElement.style.setProperty('--pm-sidebar-width', this.collapsed ? '84px' : '264px');
   }
 
   logout() {
