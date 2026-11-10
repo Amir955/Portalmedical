@@ -82,14 +82,14 @@
 
     <div class="top-end">
       <button type="button" class="top-icon" [matMenuTriggerFor]="notifMenu"
-              [attr.aria-label]="unreadCount ? unreadCount + ' demande(s) non lue(s)' : 'Demandes de rendez-vous'">
+              [attr.aria-label]="unreadCount ? unreadCount + ' notification(s) non lue(s)' : 'Notifications'">
         <mat-icon>{{ unreadCount ? 'notifications_active' : 'notifications_none' }}</mat-icon>
         <span class="top-icon__badge" *ngIf="unreadCount">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
       </button>
       <mat-menu #notifMenu="matMenu" [overlapTrigger]="false" class="notif-menu-panel" xPosition="before">
         <div class="notif-menu__head" (click)="$event.stopPropagation()">
           <div>
-            <strong>Demandes de rendez-vous</strong>
+            <strong>Notifications</strong>
             <span>
               {{ pending.length ? pending.length + ' en attente' : 'Aucune en attente' }}<ng-container *ngIf="unreadCount"> · {{ unreadCount }} non lue(s)</ng-container>
             </span>
@@ -107,9 +107,24 @@
           <span class="notif-menu__dot" aria-hidden="true"></span>
           <span class="notif-menu__text">
             <span class="notif-menu__name">{{ requestName(rdv) }}</span>
-            <span class="notif-menu__when">Pour le {{ rdv.dateOfApt | date:'EEE d MMM à HH:mm' }}</span>
+            <span class="notif-menu__when">Demande pour le {{ rdv.dateOfApt | date:'EEE d MMM à HH:mm' }}</span>
           </span>
         </button>
+        <ng-container *ngIf="cancelled.length">
+          <p class="notif-menu__section">Annulations des patients</p>
+          <button
+            mat-menu-item
+            *ngFor="let rdv of cancelled.slice(0, 5)"
+            class="notif-menu__item notif-menu__item--cancel"
+            [class.is-unread]="isCancelUnread(rdv)"
+            (click)="openCancelled(rdv)">
+            <mat-icon class="notif-menu__icon" aria-hidden="true">event_busy</mat-icon>
+            <span class="notif-menu__text">
+              <span class="notif-menu__name">{{ cancelledName(rdv) }} a annulé</span>
+              <span class="notif-menu__when">RDV du {{ rdv.dateOfApt | date:'EEE d MMM à HH:mm' }} · {{ rdv.dateAnnulation | date:'d MMM, HH:mm' }}</span>
+            </span>
+          </button>
+        </ng-container>
         <button mat-menu-item class="notif-menu__all" (click)="openRequests()">
           {{ pending.length > 5 ? 'Voir les ' + pending.length + ' demandes' : 'Ouvrir la liste des demandes' }}
         </button>

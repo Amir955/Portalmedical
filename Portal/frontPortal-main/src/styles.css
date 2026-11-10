@@ -610,6 +610,34 @@ img {
   font-size: var(--portal-text-xs);
 }
 
+.notif-menu__section {
+  margin: 0.45rem 0 0.2rem;
+  padding: 0.35rem 0.75rem 0;
+  border-top: 1px solid var(--portal-border);
+  color: var(--portal-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.notif-menu-panel .mat-menu-item.notif-menu__item--cancel.is-unread {
+  background: #fdf2f2;
+}
+
+.notif-menu-panel .mat-menu-item .mat-icon.notif-menu__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  color: #b8bfc8;
+  font-size: 20px;
+}
+
+.notif-menu__item--cancel.is-unread .mat-icon.notif-menu__icon {
+  color: var(--portal-danger);
+}
+
 .notif-menu-panel .mat-menu-item.notif-menu__all {
   margin-top: 0.25rem;
   border-radius: 10px;

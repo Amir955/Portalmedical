@@ -34,6 +34,8 @@ public interface RendezVousServices {
 	 public List<String> takenSlots(long medecinId, java.util.Date day);
 	 /** Pending requests: a doctor sees their own, other staff see all. */
 	 public List<RendezVousEntity> pendingRequestsFor(com.example.PortalMedical.enteties.UserEntity current);
+	 /** Appointments the patients cancelled with their link in the last 7 days, newest first. */
+	 public List<RendezVousEntity> recentCancellationsFor(com.example.PortalMedical.enteties.UserEntity current);
 	 /** Confirmed appointments in the same scope as pendingRequestsFor. */
 	 public List<RendezVousEntity> agendaFor(com.example.PortalMedical.enteties.UserEntity current);
 	 /** Appointments in the user's practice, in one state or (null) all states. */

@@ -177,6 +177,12 @@ public class RendezVousControllers {
 		return rendezVousServices.pendingRequestsFor(practiceScope.currentUser());
 	}
 
+	/** Cancellations made by patients in the last 7 days, for the notification bell. */
+	@GetMapping("/annulations")
+	public List<RendezVousEntity> annulations() {
+		return rendezVousServices.recentCancellationsFor(practiceScope.currentUser());
+	}
+
 	/** Confirmed appointments for the calendar, in the same scope as /demandes. */
 	@GetMapping("/agenda")
 	public List<RendezVousEntity> agenda() {

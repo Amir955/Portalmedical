@@ -29,6 +29,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /** Pending appointment requests for the bell, most recently received first. */
   pending: RendezVousEntity[] = [];
   private readIds = new Set<number>();
+  /** Appointments cancelled by patients in the last 7 days. */
+  cancelled: RendezVousEntity[] = [];
+  private cancelReadIds = new Set<number>();
   private subscriptions: Subscription[] = [];
   consultationLinks = [
     { label: 'Vue générale', route: '/consultation' },
@@ -51,7 +54,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.applySidebarWidth();
     this.subscriptions = [
       this.notifications.pending$.subscribe((list) => this.pending = list),
-      this.notifications.read$.subscribe((ids) => this.readIds = ids)
+      this.notifications.read$.subscribe((ids) => this.readIds = ids),
+      this.notifications.cancelled$.subscribe((list) => this.cancelled = list),
+      this.notifications.cancelRead$.subscribe((ids) => this.cancelReadIds = ids)
     ];
     this.notifications.start();
   }
@@ -61,7 +66,25 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   get unreadCount(): number {
-    return this.pending.filter((rdv) => !this.readIds.has(rdv.idapt)).length;
+    return this.pending.filter((rdv) => !this.readIds.has(rdv.idapt)).length + this.unreadCancelled;
+  }
+
+  get unreadCancelled(): number {
+    return this.cancelled.filter((rdv) => !this.cancelReadIds.has(rdv.idapt)).length;
+  }
+
+  isCancelUnread(rdv: RendezVousEntity): boolean {
+    return !this.cancelReadIds.has(rdv.idapt);
+  }
+
+  cancelledName(rdv: RendezVousEntity): string {
+    return DemandesNotificationService.patientName(rdv);
+  }
+
+  /** A cancellation counts as read once opened; the calendar shows the freed slot. */
+  openCancelled(rdv: RendezVousEntity): void {
+    this.notifications.markCancelRead(rdv);
+    this.router.navigateByUrl('/calender');
   }
 
   isUnread(rdv: RendezVousEntity): boolean {

@@ -77,6 +77,17 @@ public class RendezVousEntity implements Serializable {
 	@JsonIgnore
 	private Boolean rappelEnvoye;
 
+	/** When the patient cancelled with their link (shown to the practice as a notification). */
+	private Date dateAnnulation;
+
+	public Date getDateAnnulation() {
+		return dateAnnulation;
+	}
+
+	public void setDateAnnulation(Date dateAnnulation) {
+		this.dateAnnulation = dateAnnulation;
+	}
+
 	/** Day-of-visit status: null (planned), arrive, en_consultation, termine, absent. */
 	private String statutVisite;
 

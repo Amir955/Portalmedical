@@ -22,5 +22,7 @@ export class RendezVousEntity{
   /** Day-of-visit status: null (planned), arrive, en_consultation, termine, absent. */
   statutVisite?: 'arrive' | 'en_consultation' | 'termine' | 'absent' | null;
   heureArrivee?: string | null;
+  /** When the patient cancelled with their link. */
+  dateAnnulation?: string | null;
 
 }

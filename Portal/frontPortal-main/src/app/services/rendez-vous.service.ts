@@ -50,6 +50,11 @@ export class RendezVousService {
   }
 
   /** Pending requests for the signed-in user (a doctor only gets their own). */
+  /** Appointments the patients cancelled in the last 7 days, newest first. */
+  getAnnulations(): Observable<RendezVousEntity[]> {
+    return this.http.get<RendezVousEntity[]>(this.url + 'annulations');
+  }
+
   getDemandes(): Observable<RendezVousEntity[]> {
     return this.http.get<RendezVousEntity[]>(this.url + 'demandes');
   }

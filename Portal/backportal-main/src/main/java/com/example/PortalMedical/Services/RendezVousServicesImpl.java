@@ -88,6 +88,19 @@ public class RendezVousServicesImpl implements RendezVousServices {
 	}
 
 	@Override
+	public List<RendezVousEntity> recentCancellationsFor(UserEntity current) {
+		Date since = new Date(System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000);
+		List<RendezVousEntity> list = new java.util.ArrayList<>();
+		for (RendezVousEntity rdv : inScope(current, StateApt.cancelled)) {
+			if (rdv.getDateAnnulation() != null && rdv.getDateAnnulation().after(since)) {
+				list.add(rdv);
+			}
+		}
+		list.sort(Comparator.comparing(RendezVousEntity::getDateAnnulation).reversed());
+		return list;
+	}
+
+	@Override
 	public List<RendezVousEntity> agendaFor(UserEntity current) {
 		return inScope(current, StateApt.confirmed);
 	}
@@ -354,6 +367,7 @@ public class RendezVousServicesImpl implements RendezVousServices {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "This appointment is already past");
 		}
 		rdv.setStateapt(StateApt.cancelled);
+		rdv.setDateAnnulation(new Date());
 		rdv = rvrepo.save(rdv);
 		String name = (clean(rdv.getPatient() != null ? rdv.getPatient().getPrenom() : rdv.getPatientPrenom()) + " "
 				+ clean(rdv.getPatient() != null ? rdv.getPatient().getNom() : rdv.getPatientNom())).trim();
