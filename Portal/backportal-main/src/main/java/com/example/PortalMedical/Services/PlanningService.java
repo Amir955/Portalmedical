@@ -107,6 +107,35 @@ public class PlanningService {
 		return result;
 	}
 
+	/** Public overview for the booking calendar: open weekdays and upcoming days off. */
+	public java.util.Map<String, Object> calendrier(long medecinId) {
+		List<Integer> joursOuverts = new ArrayList<>();
+		int minutes = slotMinutes(medecinId);
+		for (int day = 1; day <= 7; day++) {
+			PlanningJourEntity rule = dayRule(medecinId, day);
+			List<String> slots = new ArrayList<>();
+			if (rule.isActif()) {
+				addSlots(slots, rule.getDebutMatin(), rule.getFinMatin(), minutes);
+				addSlots(slots, rule.getDebutApresMidi(), rule.getFinApresMidi(), minutes);
+			}
+			if (!slots.isEmpty()) {
+				joursOuverts.add(day);
+			}
+		}
+		List<java.util.Map<String, Object>> conges = new ArrayList<>();
+		for (CongeEntity conge : congeRepository.findByMedecinIdAndDateFinGreaterThanEqualOrderByDateDebut(medecinId, LocalDate.now())) {
+			java.util.Map<String, Object> item = new java.util.LinkedHashMap<>();
+			item.put("dateDebut", conge.getDateDebut().toString());
+			item.put("dateFin", conge.getDateFin().toString());
+			item.put("motif", conge.getMotif());
+			conges.add(item);
+		}
+		java.util.Map<String, Object> result = new java.util.LinkedHashMap<>();
+		result.put("joursOuverts", joursOuverts);
+		result.put("conges", conges);
+		return result;
+	}
+
 	/** True when this exact time is a bookable slot of the doctor's planning. */
 	public boolean isBookable(long medecinId, Date when) {
 		if (when == null) {

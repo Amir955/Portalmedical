@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatCalendar, MatCalendarCellCssClasses } from '@angular/material/datepicker';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { UserEntity } from '../../models/userEntity';
 import { AccountService } from '../services/account.service';
 import { RendezVousService } from '../services/rendez-vous.service';
-import { Creneaux, PlanningService } from '../services/planning.service';
+import { CalendrierPublic, Creneaux, PlanningService } from '../services/planning.service';
 
 @Component({
   selector: 'app-demande-rendez-vous',
@@ -21,6 +22,18 @@ export class DemandeRendezVousComponent implements OnInit {
 
   /** Each doctor's bookable times per "doctorId|yyyy-MM-dd" (their opening hours and days off). */
   private planning: { [key: string]: Creneaux } = {};
+  /** Open weekdays and days off per doctor, to mark the calendar. */
+  private calendriers: { [doctorId: number]: CalendrierPublic } = {};
+  @ViewChild(MatCalendar) calendar?: MatCalendar<Date>;
+
+  /** Greys out days the doctor does not work and days off. */
+  readonly dateFilter = (date: Date | null): boolean => !date || !this.closedReason(date);
+
+  /** "cal-conge" on days off, "cal-ferme" on days the doctor does not work. */
+  readonly dateClass = (date: Date): MatCalendarCellCssClasses => {
+    const reason = this.closedReason(date);
+    return reason ? 'cal-' + reason : '';
+  }
 
   specialtyOptions: string[] = [];
   locationOptions: string[] = [];
@@ -184,6 +197,121 @@ export class DemandeRendezVousComponent implements OnInit {
       heure: ''
     });
     this.loadTakenSlots([doctor], true);
+    this.loadCalendrier(doctor);
+  }
+
+  private loadCalendrier(doctor: UserEntity): void {
+    const apply = () => {
+      // Starts on the first day the doctor actually receives.
+      if (this.selectedDoctor === doctor && this.closedReason(this.calendarDate)) {
+        const next = this.nextOpenDate(this.calendarDate);
+        if (next) {
+          this.onCalendarDateChange(next);
+        }
+      }
+      setTimeout(() => this.calendar && this.calendar.updateTodaysDate());
+    };
+    if (this.calendriers[doctor.id]) {
+      apply();
+      return;
+    }
+    this.planningService.getCalendrier(doctor.id).subscribe(
+      (calendrier) => {
+        this.calendriers[doctor.id] = calendrier;
+        apply();
+      },
+      () => { /* the calendar simply stays unmarked */ }
+    );
+  }
+
+  /** "conge", "ferme" or '' for the selected doctor on that day. */
+  closedReason(date: Date): '' | 'conge' | 'ferme' {
+    const calendrier = this.selectedDoctor ? this.calendriers[this.selectedDoctor.id] : null;
+    if (!calendrier || !date) {
+      return '';
+    }
+    if (this.congeOn(date)) {
+      return 'conge';
+    }
+    const weekday = date.getDay() === 0 ? 7 : date.getDay();
+    return calendrier.joursOuverts.indexOf(weekday) === -1 ? 'ferme' : '';
+  }
+
+  private congeOn(date: Date): { dateDebut: string; dateFin: string; motif: string | null } | null {
+    const calendrier = this.selectedDoctor ? this.calendriers[this.selectedDoctor.id] : null;
+    if (!calendrier) {
+      return null;
+    }
+    const value = this.toDateInputValue(date);
+    return calendrier.conges.find((c) => c.dateDebut <= value && value <= c.dateFin) || null;
+  }
+
+  /** First day after this one when the doctor receives (within a year). */
+  nextOpenDate(from: Date): Date | null {
+    const calendrier = this.selectedDoctor ? this.calendriers[this.selectedDoctor.id] : null;
+    if (!calendrier || !calendrier.joursOuverts.length) {
+      return null;
+    }
+    const day = this.getStartOfDay(from);
+    for (let i = 0; i < 366; i++) {
+      if (!this.closedReason(day)) {
+        return new Date(day);
+      }
+      day.setDate(day.getDate() + 1);
+    }
+    return null;
+  }
+
+  /** Upcoming days off of the selected doctor, for the legend under the calendar. */
+  get upcomingConges(): { dateDebut: string; dateFin: string; motif: string | null }[] {
+    const calendrier = this.selectedDoctor ? this.calendriers[this.selectedDoctor.id] : null;
+    return calendrier ? calendrier.conges.slice(0, 3) : [];
+  }
+
+  /** "du 10 au 12 novembre" / "le 10 novembre". */
+  congePeriod(c: { dateDebut: string; dateFin: string }): string {
+    const fmt = (v: string, year: boolean) => new Date(v + 'T00:00:00').toLocaleDateString('fr-FR',
+      year ? { day: 'numeric', month: 'long', year: 'numeric' } : { day: 'numeric', month: 'long' });
+    return c.dateDebut === c.dateFin ? 'le ' + fmt(c.dateDebut, true) : `du ${fmt(c.dateDebut, false)} au ${fmt(c.dateFin, true)}`;
+  }
+
+  capitalize(text: string): string {
+    return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+  }
+
+  /** The selected day is closed: why, in a sentence for the patient. */
+  get closedTitle(): string {
+    const date = new Date(this.selectedDate + 'T00:00:00');
+    const conge = this.congeOn(date);
+    if (conge) {
+      return 'Le cabinet est en congé ' + this.congePeriod(conge);
+    }
+    return 'Le cabinet ne reçoit pas le ' + date.toLocaleDateString('fr-FR', { weekday: 'long' });
+  }
+
+  get closedMotif(): string {
+    const conge = this.congeOn(new Date(this.selectedDate + 'T00:00:00'));
+    return conge && conge.motif ? conge.motif : '';
+  }
+
+  /** The selected day is closed (planning loaded and no consultation). */
+  get selectedDayClosed(): boolean {
+    return !!this.selectedClosedLabel || (!!this.selectedDate && !!this.closedReason(new Date(this.selectedDate + 'T00:00:00')));
+  }
+
+  get nextOpenLabel(): string {
+    const next = this.selectedDate ? this.nextOpenDate(new Date(this.selectedDate + 'T00:00:00')) : null;
+    return next ? next.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
+  }
+
+  goToNextOpenDay(): void {
+    const next = this.nextOpenDate(new Date(this.selectedDate + 'T00:00:00'));
+    if (next) {
+      this.onCalendarDateChange(next);
+      if (this.calendar) {
+        this.calendar.activeDate = next;
+      }
+    }
   }
 
   clearSelectedDoctor(): void {

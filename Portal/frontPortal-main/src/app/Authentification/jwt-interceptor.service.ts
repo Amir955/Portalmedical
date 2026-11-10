@@ -76,6 +76,7 @@ export class JwtInterceptorService implements HttpInterceptor {
       '/rendezvous/demandeRDV',
       '/rendezvous/creneauxPris/',
       '/creneaux',
+      '/calendrier',
       '/rendezvous/annulation/'
     ].some((path) => url.indexOf(path) !== -1);
   }

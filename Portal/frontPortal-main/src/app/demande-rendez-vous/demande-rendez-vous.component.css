@@ -750,6 +750,143 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
+/* Days off and closed days in the calendar */
+:host ::ng-deep .calendar-frame .cal-conge > .mat-calendar-body-cell-content {
+  border: 1px dashed #f6b152 !important;
+  background: rgba(246, 177, 82, 0.5);
+  color: #ffffff !important;
+  opacity: 1;
+  text-decoration: line-through;
+}
+
+:host ::ng-deep .calendar-frame .cal-ferme > .mat-calendar-body-cell-content {
+  color: rgba(255, 255, 255, 0.28) !important;
+}
+
+.calendar-legend {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
+}
+
+.calendar-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.calendar-legend__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.calendar-legend__dot--open {
+  background: #ffffff;
+}
+
+.calendar-legend__dot--conge {
+  border: 1px dashed rgba(246, 177, 82, 0.9);
+  background: rgba(246, 177, 82, 0.35);
+}
+
+.calendar-legend__dot--ferme {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-conges {
+  margin-top: 1rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  background: rgba(246, 177, 82, 0.14);
+}
+
+.calendar-conges p {
+  margin: 0 0 0.4rem;
+  color: #ffd79c;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.calendar-conge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.calendar-conge + .calendar-conge {
+  margin-top: 0.3rem;
+}
+
+.calendar-conge .mat-icon {
+  width: 18px;
+  height: 18px;
+  color: #ffd79c;
+  font-size: 18px;
+}
+
+.calendar-conge em {
+  color: rgba(255, 255, 255, 0.7);
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* Closed day: replaces the slots and the form */
+.closed-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  padding: 2rem 1.5rem;
+  border: 1px solid #f6dcb3;
+  border-radius: 20px;
+  background: #fff8ee;
+  text-align: center;
+}
+
+.closed-card__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #fde9cc;
+  color: #b06d0c;
+}
+
+.closed-card__icon .mat-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+}
+
+.closed-card__text {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--portal-muted);
+}
+
+.closed-card__text strong {
+  color: var(--portal-primary);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.closed-card .primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 @media (max-width: 1100px) {
   .rdv-hero,
   .scheduler-shell {

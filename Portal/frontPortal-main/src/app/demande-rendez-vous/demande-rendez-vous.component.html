@@ -143,8 +143,24 @@
             [selected]="calendarDate"
             [minDate]="minCalendarDate"
             [startAt]="calendarDate"
+            [dateFilter]="dateFilter"
+            [dateClass]="dateClass"
             (selectedChange)="onCalendarDateChange($event)"
           ></mat-calendar>
+        </div>
+
+        <ul class="calendar-legend" aria-label="Légende du calendrier">
+          <li><i class="calendar-legend__dot calendar-legend__dot--open"></i>Disponible</li>
+          <li><i class="calendar-legend__dot calendar-legend__dot--conge"></i>Congé</li>
+          <li><i class="calendar-legend__dot calendar-legend__dot--ferme"></i>Pas de consultation</li>
+        </ul>
+
+        <div class="calendar-conges" *ngIf="upcomingConges.length">
+          <p>Congés à venir</p>
+          <div class="calendar-conge" *ngFor="let c of upcomingConges">
+            <mat-icon>beach_access</mat-icon>
+            <span>{{ capitalize(congePeriod(c)) }}<em *ngIf="c.motif"> · {{ c.motif }}</em></span>
+          </div>
         </div>
       </div>
 
@@ -174,7 +190,19 @@
           </div>
         </div>
 
-        <form [formGroup]="ajoutRDVform" class="booking-form">
+        <div class="closed-card" *ngIf="selectedDayClosed">
+          <span class="closed-card__icon"><mat-icon>{{ closedMotif || closedTitle.indexOf('congé') > -1 ? 'beach_access' : 'event_busy' }}</mat-icon></span>
+          <div class="closed-card__text">
+            <strong>{{ closedTitle }}</strong>
+            <span *ngIf="closedMotif">Motif : {{ closedMotif }}</span>
+            <span>Aucun rendez-vous ne peut être demandé ce jour-là.</span>
+          </div>
+          <button type="button" class="primary-btn" *ngIf="nextOpenLabel" (click)="goToNextOpenDay()">
+            <mat-icon>event_available</mat-icon>Prochain jour disponible : {{ nextOpenLabel }}
+          </button>
+        </div>
+
+        <form [formGroup]="ajoutRDVform" class="booking-form" *ngIf="!selectedDayClosed">
           <div class="slot-list-card">
             <div class="slot-list-card__head">
               <strong>Heures disponibles</strong>

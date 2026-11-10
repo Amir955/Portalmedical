@@ -37,6 +37,12 @@ export interface Creneaux {
   motif?: string | null;
 }
 
+/** Public overview of a doctor's calendar: open weekdays (1 = lundi) and upcoming days off. */
+export interface CalendrierPublic {
+  joursOuverts: number[];
+  conges: { dateDebut: string; dateFin: string; motif: string | null }[];
+}
+
 /** Opening hours, slot length and days off of the practice. */
 @Injectable({
   providedIn: 'root'
@@ -50,6 +56,11 @@ export class PlanningService {
   /** Public: bookable times of a doctor on a day (yyyy-MM-dd). */
   getCreneaux(medecinId: number, date: string): Observable<Creneaux> {
     return this.http.get<Creneaux>(this.url + medecinId + '/creneaux', { params: { date } });
+  }
+
+  /** Public: open weekdays and upcoming days off, to mark the booking calendar. */
+  getCalendrier(medecinId: number): Observable<CalendrierPublic> {
+    return this.http.get<CalendrierPublic>(this.url + medecinId + '/calendrier');
   }
 
   getMine(): Observable<Planning> {

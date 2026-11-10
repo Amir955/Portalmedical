@@ -40,6 +40,12 @@ public class PlanningController {
 		return planningService.creneaux(medecinId, date);
 	}
 
+	/** Public: open weekdays and upcoming days off, to mark the booking calendar. */
+	@GetMapping("/{medecinId}/calendrier")
+	public java.util.Map<String, Object> calendrier(@PathVariable long medecinId) {
+		return planningService.calendrier(medecinId);
+	}
+
 	@GetMapping("/mien")
 	public PlanningService.Planning mine() {
 		return planningService.get(requireDoctorId());
