@@ -54,13 +54,25 @@
         </div>
 
         <div class="ps-day__hours" *ngIf="jour.actif">
-          <label class="ps-range">
+          <div class="ps-mode" role="radiogroup" [attr.aria-label]="dayName(jour) + ', type de journée'">
+            <button type="button" role="radio" [class.is-active]="!unique[jour.jour]" [attr.aria-checked]="!unique[jour.jour]"
+                    (click)="setUnique(jour, false)">Deux séances</button>
+            <button type="button" role="radio" [class.is-active]="unique[jour.jour]" [attr.aria-checked]="!!unique[jour.jour]"
+                    (click)="setUnique(jour, true)">Séance unique</button>
+          </div>
+          <label class="ps-range" *ngIf="unique[jour.jour]">
+            <span>Horaires</span>
+            <input type="time" [(ngModel)]="jour.debutMatin" [attr.aria-label]="dayName(jour) + ', début'">
+            <em>–</em>
+            <input type="time" [(ngModel)]="jour.finMatin" [attr.aria-label]="dayName(jour) + ', fin'">
+          </label>
+          <label class="ps-range" *ngIf="!unique[jour.jour]">
             <span>Matin</span>
             <input type="time" [(ngModel)]="jour.debutMatin" [attr.aria-label]="dayName(jour) + ' matin, début'">
             <em>–</em>
             <input type="time" [(ngModel)]="jour.finMatin" [attr.aria-label]="dayName(jour) + ' matin, fin'">
           </label>
-          <label class="ps-range">
+          <label class="ps-range" *ngIf="!unique[jour.jour]">
             <span>Après-midi</span>
             <input type="time" [(ngModel)]="jour.debutApresMidi" [attr.aria-label]="dayName(jour) + ' après-midi, début'">
             <em>–</em>
@@ -70,7 +82,7 @@
         <div class="ps-day__closed" *ngIf="!jour.actif">Fermé</div>
       </div>
     </div>
-    <p class="ps-hint">Laissez la matinée ou l’après-midi vide pour une demi-journée.</p>
+    <p class="ps-hint">« Séance unique » : une seule plage sans pause (ex. 08:00 – 14:00). En deux séances, laissez la matinée ou l’après-midi vide pour une demi-journée.</p>
 
     <div class="pm-dialog-actions">
       <button type="button" class="pm-btn pm-btn--primary" [disabled]="saving" (click)="save()">

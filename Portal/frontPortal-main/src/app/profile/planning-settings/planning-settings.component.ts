@@ -22,6 +22,8 @@ export class PlanningSettingsComponent implements OnInit {
   /** Default consultation fee (dinars), pre-filled at checkout. */
   tarif: number | null = null;
   jours: PlanningJour[] = [];
+  /** Day number → worked in one continuous session (no lunch break). */
+  unique: { [jour: number]: boolean } = {};
   conges: Conge[] = [];
 
   newConge: Conge = { dateDebut: '', dateFin: '', motif: '' };
@@ -59,12 +61,43 @@ export class PlanningSettingsComponent implements OnInit {
   toggleDay(jour: PlanningJour): void {
     jour.actif = !jour.actif;
     if (jour.actif && !jour.debutMatin && !jour.debutApresMidi) {
-      jour.debutMatin = '08:30';
-      jour.finMatin = '12:30';
-      jour.debutApresMidi = '14:00';
-      jour.finApresMidi = '17:30';
+      if (this.unique[jour.jour]) {
+        jour.debutMatin = '08:00';
+        jour.finMatin = '14:00';
+        jour.debutApresMidi = null;
+        jour.finApresMidi = null;
+      } else {
+        jour.debutMatin = '08:30';
+        jour.finMatin = '12:30';
+        jour.debutApresMidi = '14:00';
+        jour.finApresMidi = '17:30';
+      }
     }
     this.formError = '';
+  }
+
+  /** Switch a day between two sessions (morning + afternoon) and one continuous session. */
+  setUnique(jour: PlanningJour, unique: boolean): void {
+    if (this.unique[jour.jour] === unique) {
+      return;
+    }
+    this.unique[jour.jour] = unique;
+    this.formError = '';
+    if (unique) {
+      const start = jour.debutMatin || jour.debutApresMidi || '08:00';
+      const end = jour.finApresMidi || jour.finMatin || '14:00';
+      jour.debutMatin = start;
+      jour.finMatin = end > start ? end : '14:00';
+      jour.debutApresMidi = null;
+      jour.finApresMidi = null;
+    } else {
+      const start = jour.debutMatin || '08:30';
+      const end = jour.finMatin || '17:30';
+      jour.debutMatin = start;
+      jour.finMatin = start < '12:30' ? '12:30' : end;
+      jour.debutApresMidi = '14:00';
+      jour.finApresMidi = end > '14:00' ? end : '17:30';
+    }
   }
 
   /** Same hours as Monday for every open day. */
@@ -72,6 +105,7 @@ export class PlanningSettingsComponent implements OnInit {
     const monday = this.jours[0];
     this.jours.slice(1).forEach((jour) => {
       if (jour.actif) {
+        this.unique[jour.jour] = !!this.unique[monday.jour];
         jour.debutMatin = monday.debutMatin;
         jour.finMatin = monday.finMatin;
         jour.debutApresMidi = monday.debutApresMidi;
@@ -163,6 +197,21 @@ export class PlanningSettingsComponent implements OnInit {
     this.dureeCreneau = planning.dureeCreneau;
     this.tarif = planning.tarifConsultation == null ? null : planning.tarifConsultation;
     this.jours = planning.jours.map((jour) => ({ ...jour }));
+    this.unique = {};
+    this.jours.forEach((jour) => {
+      const morning = !!(jour.debutMatin && jour.finMatin);
+      const afternoon = !!(jour.debutApresMidi && jour.finApresMidi);
+      // One range only (e.g. 08:00 – 14:00) is shown as a single session.
+      if (morning !== afternoon) {
+        this.unique[jour.jour] = true;
+        if (afternoon) {
+          jour.debutMatin = jour.debutApresMidi;
+          jour.finMatin = jour.finApresMidi;
+          jour.debutApresMidi = null;
+          jour.finApresMidi = null;
+        }
+      }
+    });
     this.conges = planning.conges || [];
   }
 
@@ -175,7 +224,7 @@ export class PlanningSettingsComponent implements OnInit {
         continue;
       }
       const ranges: [string | null, string | null, string][] = [
-        [jour.debutMatin, jour.finMatin, 'le matin'],
+        [jour.debutMatin, jour.finMatin, this.unique[jour.jour] ? 'la séance' : 'le matin'],
         [jour.debutApresMidi, jour.finApresMidi, 'l’après-midi']
       ];
       let hasRange = false;

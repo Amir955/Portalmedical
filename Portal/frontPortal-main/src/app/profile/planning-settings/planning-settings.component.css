@@ -140,6 +140,37 @@
   flex-wrap: wrap;
 }
 
+.ps-day__hours {
+  align-items: center;
+}
+
+.ps-mode {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--portal-border);
+  border-radius: 999px;
+  background: var(--portal-background);
+}
+
+.ps-mode button {
+  min-height: 30px;
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--portal-muted);
+  font-size: var(--portal-text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ps-mode button.is-active {
+  background: #ffffff;
+  color: var(--portal-primary);
+  box-shadow: 0 1px 4px rgba(31, 58, 95, 0.15);
+}
+
 .ps-day__closed {
   color: var(--portal-muted);
   font-size: var(--portal-text-sm);
