@@ -23,6 +23,7 @@ import { DoctorGuard } from './Authentification/guards/doctor.guard';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AnnulationComponent } from './annulation/annulation.component';
+import { PatientFileComponent } from './patient-file/patient-file.component';
 
 const routes: Routes = [
   { path: '', component: AcceuilComponent},
@@ -30,6 +31,7 @@ const routes: Routes = [
   { path: 'inscription', component: InscriptionComponent },
   { path: 'demandeRDV', component: DemandeRendezVousComponent},
   { path: 'annuler/:token', component: AnnulationComponent },
+  { path: 'patients/:id', component: PatientFileComponent, canActivate: [AuthGuard] },
   { path: 'tableau-de-bord', component: DashboardComponent, canActivate: [AuthGuard] },
   {path:'calender', component: CalenderComponent, canActivate: [AuthGuard]},
   {path:'listeRDV', component: ListeRendezVousComponent, canActivate: [AuthGuard]},

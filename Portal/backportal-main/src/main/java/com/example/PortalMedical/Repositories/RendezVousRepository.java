@@ -32,4 +32,8 @@ public interface RendezVousRepository extends JpaRepository<RendezVousEntity, Lo
 	List<RendezVousEntity> findByStateaptAndDateOfAptGreaterThanEqualAndDateOfAptLessThan(StateApt state, Date start, Date end);
 
 	RendezVousEntity findFirstByJetonAnnulation(String jetonAnnulation);
+
+	List<RendezVousEntity> findByPatient_Id(long patientId);
+
+	List<RendezVousEntity> findByPatientEmailIgnoreCase(String patientEmail);
 }

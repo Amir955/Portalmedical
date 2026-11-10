@@ -43,7 +43,7 @@
                 <span class="pt-avatar">{{ initials(patient) }}</span>
                 <span class="pt-person__text">
                   <strong>{{ patient.prenom }} {{ patient.nom }}</strong>
-                  <a *ngIf="patient.email" [href]="'mailto:' + patient.email">{{ patient.email }}</a>
+                  <a *ngIf="patient.email" [href]="'mailto:' + patient.email" (click)="$event.stopPropagation()">{{ patient.email }}</a>
                 </span>
               </div>
             </td>
@@ -63,7 +63,7 @@
           <ng-container matColumnDef="numtelephone">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Téléphone</th>
             <td mat-cell *matCellDef="let patient">
-              <a *ngIf="patient.numtelephone; else noPhone" class="pt-phone" [href]="phoneLink(patient.numtelephone)">
+              <a *ngIf="patient.numtelephone; else noPhone" class="pt-phone" [href]="phoneLink(patient.numtelephone)" (click)="$event.stopPropagation()">
                 <mat-icon>call</mat-icon>{{ patient.numtelephone }}
               </a>
               <ng-template #noPhone><span class="pt-muted">—</span></ng-template>
@@ -80,11 +80,11 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="pt-actions-head"><span class="cdk-visually-hidden">Actions</span></th>
             <td mat-cell *matCellDef="let patient" class="pt-actions-cell">
-              <button type="button" class="pm-icon-btn" (click)="edit(patient)"
+              <button type="button" class="pm-icon-btn" (click)="$event.stopPropagation(); edit(patient)"
                       matTooltip="Modifier" [attr.aria-label]="'Modifier ' + patient.prenom + ' ' + patient.nom">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button type="button" class="pm-icon-btn pm-icon-btn--danger" (click)="askDelete(patient)"
+              <button type="button" class="pm-icon-btn pm-icon-btn--danger" (click)="$event.stopPropagation(); askDelete(patient)"
                       matTooltip="Supprimer" [attr.aria-label]="'Supprimer ' + patient.prenom + ' ' + patient.nom">
                 <mat-icon>delete_outline</mat-icon>
               </button>
@@ -92,7 +92,8 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (dblclick)="edit(row)"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="pt-row-link" (click)="open(row)"
+              tabindex="0" (keydown.enter)="open(row)" [attr.aria-label]="'Ouvrir le dossier de ' + row.prenom + ' ' + row.nom"></tr>
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell pt-empty" [attr.colspan]="displayedColumns.length">
               <ng-container *ngIf="loading">Chargement des patients…</ng-container>

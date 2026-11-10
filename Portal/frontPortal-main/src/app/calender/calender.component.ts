@@ -83,6 +83,11 @@ export class CalenderComponent implements OnInit {
       this.doctors = doctors || [];
       if (openNew) {
         this.openAdd();
+        // From a patient file: the patient is already chosen.
+        const patientId = Number(this.route.snapshot.queryParamMap.get('patient'));
+        if (patientId) {
+          this.addForm.patchValue({ patientId });
+        }
         this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
       }
     });

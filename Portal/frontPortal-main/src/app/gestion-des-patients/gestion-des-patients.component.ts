@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Patient } from 'src/models/Patient';
 import { PatientService } from '../services/patient.service';
@@ -30,6 +30,7 @@ export class GestionDesPatientsComponent implements OnInit, AfterViewInit {
               private toast: ToastrService,
               private dialog: MatDialog,
               private route: ActivatedRoute,
+              private router: Router,
               paginatorIntl: MatPaginatorIntl) {
     paginatorIntl.itemsPerPageLabel = 'Patients par page';
     paginatorIntl.nextPageLabel = 'Page suivante';
@@ -129,6 +130,11 @@ export class GestionDesPatientsComponent implements OnInit, AfterViewInit {
 
   add(): void {
     this.openForm({});
+  }
+
+  /** Opens the patient's file. */
+  open(patient: Patient): void {
+    this.router.navigate(['/patients', patient.id]);
   }
 
   edit(patient: Patient): void {

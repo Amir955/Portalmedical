@@ -33,6 +33,7 @@ import com.example.PortalMedical.Repositories.UserRepository;
 import com.example.PortalMedical.Services.PracticeScope;
 import com.example.PortalMedical.Services.RendezVousServices;
 import com.example.PortalMedical.enteties.RendezVousEntity;
+import com.example.PortalMedical.enteties.PatientEntity;
 //import com.example.PortalMedical.enteties.RendezVousEntity.Days;
 import com.example.PortalMedical.enteties.RendezVousEntity.StateApt;
 import com.example.PortalMedical.enteties.UserEntity;
@@ -63,6 +64,9 @@ public class RendezVousControllers {
 	@Autowired
 	PracticeScope practiceScope;
 
+	@Autowired
+	com.example.PortalMedical.Repositories.PatientRepository patientRepository;
+
 	/** Staff add an appointment, only for a doctor of their own practice. */
 	@PostMapping("/ajouterApt")
 	@ResponseBody
@@ -85,6 +89,26 @@ public class RendezVousControllers {
 	public List<String> creneauxPris(@PathVariable long medecinId,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
 		return rendezVousServices.takenSlots(medecinId, date);
+	}
+
+	/** A patient's appointments in the user's practice (linked record, or same e-mail), newest first. */
+	@GetMapping("/patient/{patientId}")
+	public List<RendezVousEntity> patientAppointments(@PathVariable long patientId) {
+		PatientEntity patient = practiceScope.requirePatient(patientRepository.findById(patientId).orElse(null));
+		Map<Long, RendezVousEntity> byId = new java.util.LinkedHashMap<>();
+		rendezVousRepository.findByPatient_Id(patientId).forEach(r -> byId.put(r.getIdapt(), r));
+		if (patient.getEmail() != null && !patient.getEmail().trim().isEmpty()) {
+			rendezVousRepository.findByPatientEmailIgnoreCase(patient.getEmail().trim()).forEach(r -> byId.putIfAbsent(r.getIdapt(), r));
+		}
+		List<RendezVousEntity> list = new java.util.ArrayList<>();
+		for (RendezVousEntity r : byId.values()) {
+			if (r.getUser() != null && practiceScope.canAccessDoctor(r.getUser().getId())) {
+				list.add(r);
+			}
+		}
+		list.sort(java.util.Comparator.comparing(RendezVousEntity::getDateOfApt,
+				java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder())));
+		return list;
 	}
 
 	/** Public: what the patient's cancel link points to (no personal data beyond the doctor's name). */

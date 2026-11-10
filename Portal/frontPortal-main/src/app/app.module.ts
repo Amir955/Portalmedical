@@ -63,6 +63,7 @@ import { PortalDateAdapter } from './portal-date-adapter';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AnnulationComponent } from './annulation/annulation.component';
+import { PatientFileComponent } from './patient-file/patient-file.component';
 
 registerLocaleData(localeFr);
 
@@ -101,7 +102,8 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     PlanningSettingsComponent,
     ProfileComponent,
     DashboardComponent,
-    AnnulationComponent
+    AnnulationComponent,
+    PatientFileComponent
 
   ],
   imports: [
