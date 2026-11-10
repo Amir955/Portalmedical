@@ -1,0 +1,159 @@
+<app-navbar></app-navbar>
+
+<section class="consultation-shell">
+  <div class="hero">
+    <p class="eyebrow">Consultation</p>
+    <h1>Fiche consultation</h1>
+    <p class="hero-text">
+      Rechercher un patient, ouvrir son historique, puis ajouter une nouvelle fiche sans écraser les précédentes.
+    </p>
+  </div>
+
+  <div class="workspace">
+    <mat-card class="panel search-panel">
+      <div class="panel-head">
+        <div>
+          <p class="panel-kicker">Recherche patient</p>
+          <h2>Retrouver rapidement un dossier</h2>
+        </div>
+        <button type="button" class="ghost-btn" (click)="loadPatients()">Actualiser</button>
+      </div>
+
+      <mat-form-field appearance="fill" class="search-field">
+        <mat-label>Nom, prénom, email, CIN, téléphone, date de naissance...</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="applyPatientFilter()" />
+      </mat-form-field>
+
+      <div class="results-meta">
+        <span>{{ filteredPatients.length }} patient(s)</span>
+        <span *ngIf="selectedPatient">Selectionne: {{ getPatientLabel(selectedPatient) }}</span>
+      </div>
+
+      <div class="patient-list" *ngIf="!loadingPatients; else loadingPatientsTpl">
+        <button
+          type="button"
+          class="patient-item"
+          *ngFor="let patient of filteredPatients"
+          [class.active]="selectedPatient?.id === patient.id"
+          (click)="selectPatient(patient)">
+          <span class="patient-name">{{ getPatientLabel(patient) }}</span>
+          <span class="patient-meta">{{ getPatientMeta(patient) }}</span>
+        </button>
+
+        <div class="empty-state" *ngIf="filteredPatients.length === 0">
+          Aucun patient ne correspond a la recherche.
+        </div>
+      </div>
+
+      <ng-template #loadingPatientsTpl>
+        <div class="empty-state">Chargement des patients...</div>
+      </ng-template>
+    </mat-card>
+
+    <div class="content-column">
+      <mat-card class="panel selected-panel" *ngIf="selectedPatient as patient; else noPatientTpl">
+        <p class="panel-kicker">Patient selectionne</p>
+        <div class="selected-grid">
+          <div>
+            <h2>{{ getPatientLabel(patient) }}</h2>
+            <p>{{ patient.email }}</p>
+            <p>{{ patient.numtelephone }}</p>
+          </div>
+          <div>
+            <p><strong>Date de naissance:</strong> {{ formatDate(patient.age) }}</p>
+            <p><strong>CIN:</strong> {{ patient.cin || '-' }}</p>
+            <p><strong>Ville:</strong> {{ patient.ville || '-' }}</p>
+          </div>
+        </div>
+      </mat-card>
+
+      <ng-template #noPatientTpl>
+        <mat-card class="panel selected-panel muted">
+          <p class="panel-kicker">Patient selectionne</p>
+          <h2>Choisis un patient pour voir sa fiche</h2>
+          <p>L'historique et le formulaire de consultation s'activeront ici.</p>
+        </mat-card>
+      </ng-template>
+
+      <mat-card class="panel history-panel" *ngIf="selectedPatient">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">Historique</p>
+            <h2>Consultations précédentes</h2>
+          </div>
+          <span class="count-badge">{{ history.length }}</span>
+        </div>
+
+        <div class="history-list" *ngIf="!loadingHistory; else loadingHistoryTpl">
+          <article class="history-card" *ngFor="let fiche of history; let i = index">
+            <div class="history-top">
+              <div>
+                <span class="history-title">{{ getConsultationTitle(i) }}</span>
+                <span class="history-date">{{ getConsultationDate(fiche) }}</span>
+              </div>
+            </div>
+            <p class="history-summary">{{ getConsultationSummary(fiche) }}</p>
+            <div class="history-details">
+              <div><strong>Motif:</strong> {{ fiche.causedeconsultation || '-' }}</div>
+              <div><strong>Examen:</strong> {{ fiche.examen || '-' }}</div>
+              <div><strong>Suivi:</strong> {{ fiche.suivie || '-' }}</div>
+            </div>
+          </article>
+
+          <div class="empty-state" *ngIf="history.length === 0">
+            Aucune fiche consultation pour ce patient.
+          </div>
+        </div>
+
+        <ng-template #loadingHistoryTpl>
+          <div class="empty-state">Chargement de l'historique...</div>
+        </ng-template>
+      </mat-card>
+
+      <mat-card class="panel form-panel" *ngIf="selectedPatient">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">Nouvelle fiche</p>
+            <h2>Ajouter une consultation</h2>
+          </div>
+          <span class="hint">Titre auto: Consultation {{ history.length + 1 }}</span>
+        </div>
+
+        <form [formGroup]="ficheForm" class="fiche-form">
+          <div class="form-grid">
+            <mat-form-field appearance="fill">
+              <mat-label>Reference / matricule CNAM</mat-label>
+              <input matInput formControlName="matriculecnam" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Motif de consultation</mat-label>
+              <input matInput formControlName="causedeconsultation" />
+            </mat-form-field>
+          </div>
+
+          <div class="form-grid">
+            <mat-form-field appearance="fill">
+              <mat-label>Examen / observations</mat-label>
+              <textarea matInput rows="5" formControlName="examen"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Suivi / plan</mat-label>
+              <textarea matInput rows="5" formControlName="suivie"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="secondary-btn" (click)="ficheForm.reset({ matriculecnam: selectedPatient?.cin || '' })">
+              Réinitialiser
+            </button>
+            <button type="button" class="primary-btn" (click)="saveFiche()" [disabled]="ficheForm.invalid || saving">
+              {{ saving ? 'Enregistrement...' : 'Enregistrer la fiche' }}
+            </button>
+          </div>
+        </form>
+      </mat-card>
+    </div>
+  </div>
+</section>

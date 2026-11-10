@@ -1,0 +1,304 @@
+<section class="rdv-page">
+  <header class="rdv-navbar">
+    <a class="brand" [routerLink]="['/']" aria-label="PortalMedical accueil">
+      <img src="assets/img/logo.svg" alt="Logo PortalMedical" class="brand-logo">
+    </a>
+
+    <div class="rdv-navbar__actions">
+      <a class="nav-link" [routerLink]="['/']">Accueil</a>
+      <a class="nav-button" [routerLink]="['/login']">Connectez-vous</a>
+    </div>
+  </header>
+
+  <div class="rdv-shell">
+    <section class="rdv-hero">
+      <div class="rdv-hero__copy">
+        <p class="rdv-eyebrow">Demande de rendez-vous</p>
+        <h1>Choisissez un médecin et un créneau disponible</h1>
+        <p class="rdv-description">
+          Trouvez votre médecin, choisissez un jour et une heure libres, puis envoyez votre demande.
+          Vous recevrez la confirmation par e-mail.
+        </p>
+      </div>
+
+      <div class="rdv-principles">
+        <article class="principle-card">
+          <span>01</span>
+          <strong>Trouver</strong>
+          <p>Recherchez par nom, spécialité ou ville.</p>
+        </article>
+        <article class="principle-card">
+          <span>02</span>
+          <strong>Choisir</strong>
+          <p>Sélectionnez un médecin, puis le jour qui vous convient.</p>
+        </article>
+        <article class="principle-card">
+          <span>03</span>
+          <strong>Réserver</strong>
+          <p>Choisissez une heure libre et envoyez votre demande.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="filter-panel">
+      <div class="filter-panel__head">
+        <div>
+          <p class="panel-kicker">Filtres</p>
+          <h2>Trouver le bon médecin</h2>
+        </div>
+        <button type="button" class="ghost-btn" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+
+      <div class="filter-grid">
+        <label class="field">
+          <span>Recherche libre</span>
+          <input
+            type="text"
+            [(ngModel)]="filterQuery"
+            (ngModelChange)="applyFilters()"
+            placeholder="Nom, prénom, email, CIN, téléphone..."
+          >
+        </label>
+
+        <label class="field">
+          <span>Spécialité</span>
+          <select [(ngModel)]="selectedSpecialty" (ngModelChange)="applyFilters()">
+            <option value="all">Toutes les spécialités</option>
+            <option *ngFor="let specialty of specialtyOptions" [value]="specialty">{{ specialty }}</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Ville</span>
+          <select [(ngModel)]="selectedLocation" (ngModelChange)="applyFilters()">
+            <option value="all">Toutes les villes</option>
+            <option *ngFor="let location of locationOptions" [value]="location">{{ location }}</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="doctor-panel">
+      <div class="section-head">
+        <div>
+          <p class="panel-kicker">Médecins</p>
+          <h2>{{ filteredMedecins.length }} profil(s) trouves</h2>
+        </div>
+        <p class="section-note">Sélectionnez une carte pour ouvrir l'agenda du médecin.</p>
+      </div>
+
+      <div class="doctor-grid" *ngIf="filteredMedecins.length; else noDoctorResult">
+        <button
+          type="button"
+          class="doctor-card"
+          *ngFor="let medecin of filteredMedecins"
+          [class.is-selected]="selectedDoctor?.id === medecin.id"
+          (click)="selectDoctor(medecin)"
+        >
+          <div class="doctor-card__head">
+            <div class="doctor-avatar">{{ getDoctorInitials(medecin) }}</div>
+            <div class="doctor-copy">
+              <p class="doctor-specialty">{{ getDoctorSpecialty(medecin) }}</p>
+              <h3>Dr. {{ getDoctorDisplayName(medecin) }}</h3>
+            </div>
+            <span class="doctor-status">{{ getDoctorAvailabilityLabel(medecin) }}</span>
+          </div>
+
+          <p class="doctor-summary">{{ getDoctorLocation(medecin) }}</p>
+
+          <div class="doctor-meta">
+            <span>{{ medecin.email }}</span>
+            <span>{{ medecin.numtelephone || 'Telephone non renseigne' }}</span>
+            <span>CIN {{ medecin.cin || 'non renseigne' }}</span>
+          </div>
+
+          <div class="slot-preview">
+            <span class="slot-preview__label">Aperçu du {{ formatDateLabel(selectedDate) }}</span>
+            <div class="slot-preview__chips" *ngIf="getPreviewSlots(medecin).length; else noPreviewSlots">
+              <span *ngFor="let slot of getPreviewSlots(medecin)">{{ slot }}</span>
+            </div>
+            <ng-template #noPreviewSlots>
+              <small>Aucun créneau libre pour cette date.</small>
+            </ng-template>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <section class="scheduler-shell" *ngIf="selectedDoctor; else emptyScheduler">
+      <div class="scheduler-calendar">
+        <div class="scheduler-calendar__brand">
+          <div class="scheduler-avatar">{{ getDoctorInitials(selectedDoctor) }}</div>
+          <div>
+            <p class="scheduler-kicker">{{ getDoctorSpecialty(selectedDoctor) }}</p>
+            <h2>Dr. {{ getDoctorDisplayName(selectedDoctor) }}</h2>
+          </div>
+        </div>
+
+        <p class="scheduler-calendar__title">Choisissez votre date</p>
+        <p class="scheduler-calendar__month">{{ selectedMonthLabel }}</p>
+
+        <div class="calendar-frame">
+          <mat-calendar
+            [selected]="calendarDate"
+            [minDate]="minCalendarDate"
+            [startAt]="calendarDate"
+            (selectedChange)="onCalendarDateChange($event)"
+          ></mat-calendar>
+        </div>
+      </div>
+
+      <div class="scheduler-detail">
+        <div class="scheduler-detail__head">
+          <div>
+            <p class="panel-kicker">Disponibilités</p>
+            <h2>Quelle heure vous convient le mieux ?</h2>
+            <p class="scheduler-detail__subtitle">
+              Affichage des heures pour le {{ formatDateLabel(selectedDate) }}
+            </p>
+          </div>
+        </div>
+
+        <div class="detail-facts">
+          <div class="detail-fact">
+            <span>Lieu du rendez-vous</span>
+            <strong>{{ getMeetingLocation(selectedDoctor) }}</strong>
+          </div>
+          <div class="detail-fact">
+            <span>Durée du rendez-vous</span>
+            <strong>{{ meetingDuration }}</strong>
+          </div>
+          <div class="detail-fact detail-fact--wide">
+            <span>Fuseau horaire</span>
+            <strong>{{ timezoneLabel }}</strong>
+          </div>
+        </div>
+
+        <form [formGroup]="ajoutRDVform" class="booking-form">
+          <div class="slot-list-card">
+            <div class="slot-list-card__head">
+              <strong>Heures disponibles</strong>
+              <span>{{ getSelectedDoctorAvailableSlots().length }} libre(s) sur {{ heures.length }}</span>
+            </div>
+
+            <div class="slot-list-scroll" *ngIf="getSelectedDoctorAvailableSlots().length; else noSlotsAvailable">
+              <button
+                type="button"
+                class="slot-row"
+                *ngFor="let slot of heures"
+                [class.is-selected]="selectedSlot === slot"
+                [class.is-unavailable]="getSlotStatus(slot)"
+                [disabled]="getSlotStatus(slot)"
+                [attr.aria-label]="slot + (getSlotStatus(slot) ? ', ' + getSlotStatus(slot) : '')"
+                (click)="selectSlot(slot)"
+              >
+                <span>{{ slot }}</span>
+                <small *ngIf="getSlotStatus(slot)" class="slot-row__status">{{ getSlotStatus(slot) }}</small>
+              </button>
+            </div>
+          </div>
+
+          <fieldset class="patient-card">
+            <legend class="patient-card__title">Vos coordonnées</legend>
+            <p class="patient-card__hint">Le cabinet les utilise pour vous identifier et vous rappeler si besoin.</p>
+
+            <div class="patient-grid">
+              <label class="field">
+                <span>Nom</span>
+                <input type="text" formControlName="patientNom" autocomplete="family-name" placeholder="Votre nom">
+                <small class="field-error" *ngIf="hasError('patientNom')">Le nom est requis.</small>
+              </label>
+
+              <label class="field">
+                <span>Prénom</span>
+                <input type="text" formControlName="patientPrenom" autocomplete="given-name" placeholder="Votre prénom">
+                <small class="field-error" *ngIf="hasError('patientPrenom')">Le prénom est requis.</small>
+              </label>
+
+              <label class="field">
+                <span>Date de naissance</span>
+                <input type="date" formControlName="patientDateNaissance" autocomplete="bday" [max]="minDate">
+                <small class="field-error" *ngIf="hasError('patientDateNaissance')">La date de naissance est requise.</small>
+              </label>
+
+              <label class="field">
+                <span>Téléphone</span>
+                <input type="tel" formControlName="patientTelephone" autocomplete="tel" placeholder="Ex. 22 123 456">
+                <small class="field-error" *ngIf="hasError('patientTelephone', 'required')">Le téléphone est requis.</small>
+                <small class="field-error" *ngIf="hasError('patientTelephone', 'pattern')">Numéro de téléphone invalide.</small>
+              </label>
+
+              <label class="field patient-grid__wide">
+                <span>Adresse e-mail</span>
+                <input type="email" formControlName="patientEmail" autocomplete="email" placeholder="nom@exemple.com">
+                <small class="field-error" *ngIf="hasError('patientEmail', 'required')">L'adresse e-mail est requise.</small>
+                <small class="field-error" *ngIf="hasError('patientEmail', 'email')">Adresse e-mail invalide.</small>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="selection-card">
+            <p class="selection-card__title">Résumé de votre demande</p>
+            <div class="selection-card__grid">
+              <div>
+                <strong>Médecin</strong>
+                <span>Dr. {{ getDoctorDisplayName(selectedDoctor) }}</span>
+              </div>
+              <div>
+                <strong>Date</strong>
+                <span>{{ formatDateLabel(selectedDate) }}</span>
+              </div>
+              <div>
+                <strong>Heure</strong>
+                <span>{{ selectedSlot || 'Choisissez un créneau' }}</span>
+              </div>
+              <div>
+                <strong>État</strong>
+                <span>Demande en attente de confirmation</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-alert" role="alert" *ngIf="formError">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span><strong>{{ formErrorTitle }}</strong>{{ formError }}</span>
+          </div>
+
+          <div class="booking-actions">
+            <button type="button" class="secondary-btn" [routerLink]="['/']">Retour accueil</button>
+            <button
+              type="button"
+              class="primary-btn"
+              [disabled]="ajoutRDVform.invalid || submitting || !selectedDoctor"
+              (click)="ajoutRdv()"
+            >
+              {{ submitting ? 'Envoi...' : 'Envoyer la demande' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</section>
+
+<ng-template #emptyScheduler>
+  <section class="booking-empty">
+    <img src="assets/img/logo.svg" alt="PortalMedical" class="booking-empty__logo">
+    <p class="panel-kicker">Selection</p>
+    <h2>Choisissez d'abord un médecin</h2>
+    <p>Son calendrier et ses heures disponibles apparaitront ici automatiquement.</p>
+  </section>
+</ng-template>
+
+<ng-template #noDoctorResult>
+  <div class="empty-state">
+    <h3>Aucun médecin ne correspond aux filtres</h3>
+    <p>Essayez une autre orthographe, une autre ville ou reinitialisez les filtres.</p>
+  </div>
+</ng-template>
+
+<ng-template #noSlotsAvailable>
+  <div class="slot-empty">
+    Aucun créneau libre pour cette date. Essayez un autre jour dans le calendrier.
+  </div>
+</ng-template>

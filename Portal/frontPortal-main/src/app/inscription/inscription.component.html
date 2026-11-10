@@ -1,0 +1,96 @@
+<app-auth-shell
+  [wide]="true"
+  eyebrow="Espace médecin"
+  heading="Rejoignez PortalMedical"
+  text="Créez votre compte médecin pour gérer votre agenda, vos patients et vos documents, puis ajoutez votre secrétariat.">
+
+  <p class="auth-eyebrow">Inscription médecin</p>
+  <h1 class="auth-title">Créer un compte</h1>
+  <p class="auth-subtitle">Quelques informations suffisent. Tous les champs sont obligatoires.</p>
+
+  <form [formGroup]="inscriptionForm" class="auth-form" (ngSubmit)="registerUser()" novalidate>
+    <div class="form-alert" role="alert" *ngIf="formError">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span><strong>Inscription impossible</strong>{{ formError }}</span>
+    </div>
+
+    <div class="auth-grid-2">
+      <mat-form-field appearance="outline" class="auth-field">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom" autocomplete="family-name" required>
+        <mat-error>Saisissez votre nom</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="auth-field">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom" autocomplete="given-name" required>
+        <mat-error>Saisissez votre prénom</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="auth-field">
+      <mat-label>Date de naissance</mat-label>
+      <mat-icon matPrefix>cake</mat-icon>
+      <input matInput type="date" formControlName="age" autocomplete="bday" [max]="today" required>
+      <mat-error>Saisissez votre date de naissance</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="auth-field">
+      <mat-label>Adresse e-mail</mat-label>
+      <mat-icon matPrefix>mail</mat-icon>
+      <input matInput type="email" formControlName="email" autocomplete="email" placeholder="nom@exemple.com" required>
+      <mat-error *ngIf="inscriptionForm.get('email').hasError('taken'); else emailError">
+        Cette adresse e-mail est déjà utilisée
+      </mat-error>
+      <ng-template #emailError><mat-error>{{ getErrorEmailMessage() }}</mat-error></ng-template>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="auth-field">
+      <mat-label>Mot de passe</mat-label>
+      <mat-icon matPrefix>lock</mat-icon>
+      <input
+        matInput
+        [type]="showPassword ? 'text' : 'password'"
+        formControlName="password"
+        autocomplete="new-password"
+        required>
+      <button
+        type="button"
+        matSuffix
+        class="auth-visibility"
+        (click)="showPassword = !showPassword"
+        [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+        <mat-icon>{{ showPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+      <mat-error>{{ getErrorPasswordMessage() }}</mat-error>
+    </mat-form-field>
+
+    <ul class="auth-rules" aria-live="polite">
+      <li [class.is-met]="hasMinLength">
+        <mat-icon aria-hidden="true">{{ hasMinLength ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+        Au moins {{ minLength }} caractères
+      </li>
+      <li [class.is-met]="hasLetterAndDigit">
+        <mat-icon aria-hidden="true">{{ hasLetterAndDigit ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+        Des lettres et au moins un chiffre (recommandé)
+      </li>
+    </ul>
+
+    <div class="auth-note">
+      <mat-icon aria-hidden="true">support_agent</mat-icon>
+      <span>
+        <strong>Vous êtes secrétaire ?</strong>
+        Votre médecin crée votre compte depuis son profil (« Mon secrétariat ») ; vous recevrez un e-mail
+        pour choisir votre mot de passe.
+      </span>
+    </div>
+
+    <button type="submit" class="auth-primary" [disabled]="submitting">
+      {{ submitting ? 'Création du compte…' : 'Créer mon compte' }}
+    </button>
+  </form>
+
+  <p class="auth-footer">
+    Déjà inscrit ? <a routerLink="/login">Se connecter</a>
+  </p>
+</app-auth-shell>

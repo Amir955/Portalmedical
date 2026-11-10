@@ -1,0 +1,14 @@
+<svg width="860" height="220" viewBox="0 0 860 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>PortalMedical</title>
+  <desc>Logo PortalMedical avec croix médicale, anneau turquoise et slogan Accessible. Sécurisé. Humain.</desc>
+  <g>
+    <circle cx="110" cy="110" r="78" stroke="#20C5B3" stroke-width="12"/>
+    <circle cx="170" cy="50" r="15" fill="#20C5B3"/>
+    <path d="M96 69C96 64.5817 99.5817 61 104 61H116C120.418 61 124 64.5817 124 69V96H151C155.418 96 159 99.5817 159 104V116C159 120.418 155.418 124 151 124H124V151C124 155.418 120.418 159 116 159H104C99.5817 159 96 155.418 96 151V124H69C64.5817 124 61 120.418 61 116V104C61 99.5817 64.5817 96 69 96H96V69Z" fill="#1F3A5F"/>
+  </g>
+  <g>
+    <!-- textLength pins the width: an SVG shown through <img> cannot load web fonts, so without it a wider fallback font overflowed and cut "Medical". -->
+    <text x="235" y="102" font-family="Poppins, Arial, sans-serif" font-size="74" font-weight="800" textLength="600" lengthAdjust="spacingAndGlyphs"><tspan fill="#1F3A5F">Portal</tspan><tspan fill="#20C5B3">Medical</tspan></text>
+    <text x="238" y="152" fill="#60728A" font-family="Poppins, Arial, sans-serif" font-size="28" font-weight="500" textLength="430" lengthAdjust="spacingAndGlyphs">Accessible. Sécurisé. Humain.</text>
+  </g>
+</svg>

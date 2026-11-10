@@ -1,0 +1,134 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <div class="portal-hero">
+      <div class="portal-hero__icon">
+        <mat-icon>event_available</mat-icon>
+      </div>
+      <div>
+        <h1 class="portal-hero__title">Demandes de rendez-vous</h1>
+        <p class="portal-hero__subtitle">
+          Acceptez ou refusez les demandes envoyées depuis la page publique. Le patient est prévenu par e-mail.
+        </p>
+      </div>
+    </div>
+
+    <div class="portal-card portal-card--spacious">
+      <div class="requests-head">
+        <div class="portal-section-title">En attente de réponse</div>
+        <span class="requests-count" *ngIf="!loading">{{ requests.length }}</span>
+        <button type="button" class="requests-refresh" (click)="load()" [disabled]="loading" aria-label="Actualiser la liste">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+
+      <div class="requests-filters" *ngIf="!loading && requests.length">
+        <div class="requests-periods" role="group" aria-label="Filtrer par date">
+          <button
+            type="button"
+            *ngFor="let item of periods"
+            class="requests-period"
+            [class.is-active]="period === item.value"
+            [attr.aria-pressed]="period === item.value"
+            (click)="period = item.value">
+            {{ item.label }}<span class="requests-period__count">{{ count(item.value) }}</span>
+          </button>
+        </div>
+        <label class="requests-search">
+          <mat-icon aria-hidden="true">search</mat-icon>
+          <input type="search" [(ngModel)]="search" placeholder="Nom, e-mail ou téléphone" aria-label="Rechercher un patient">
+        </label>
+      </div>
+
+      <div class="requests-loading" *ngIf="loading">Chargement des demandes…</div>
+
+      <div class="requests-empty" *ngIf="!loading && !requests.length">
+        <mat-icon>inbox</mat-icon>
+        <strong>Aucune demande en attente</strong>
+        <span>Les nouvelles demandes apparaîtront ici et dans la cloche de notifications.</span>
+      </div>
+
+      <div class="requests-empty" *ngIf="!loading && requests.length && !filtered.length">
+        <mat-icon>filter_alt_off</mat-icon>
+        <strong>Aucune demande pour ce filtre</strong>
+        <button type="button" class="requests-reset" (click)="resetFilters()">Afficher toutes les demandes</button>
+      </div>
+
+      <ul class="requests" *ngIf="!loading && filtered.length">
+        <li class="request" *ngFor="let rdv of filtered" [class.is-busy]="busyId === rdv.idapt" [class.request--no-doctor]="!showDoctor || !rdv.user">
+          <div class="request__when" [class.is-past]="isPast(rdv)">
+            <span class="request__day">{{ rdv.dateOfApt | date:'EEE d MMM' }}</span>
+            <strong class="request__time">{{ rdv.dateOfApt | date:'HH:mm' }}</strong>
+            <span class="request__year">{{ rdv.dateOfApt | date:'yyyy' }}</span>
+          </div>
+
+          <div class="request__patient">
+            <div class="request__avatar">{{ initials(rdv) }}</div>
+            <div class="request__identity">
+              <strong>{{ patientName(rdv) }}</strong>
+              <span *ngIf="age(rdv) !== null">{{ age(rdv) }} ans · né(e) le {{ rdv.patientDateNaissance | date:'dd/MM/yyyy' }}</span>
+              <span class="request__past" *ngIf="isPast(rdv)">Date dépassée</span>
+            </div>
+          </div>
+
+          <div class="request__contact">
+            <a *ngIf="rdv.patientTelephone" [href]="phoneLink(rdv.patientTelephone)">
+              <mat-icon>call</mat-icon>{{ rdv.patientTelephone }}
+            </a>
+            <a *ngIf="rdv.patientEmail" [href]="'mailto:' + rdv.patientEmail">
+              <mat-icon>mail</mat-icon>{{ rdv.patientEmail }}
+            </a>
+          </div>
+
+          <div class="request__doctor" *ngIf="showDoctor && rdv.user">
+            <span>Médecin</span>
+            <strong>Dr {{ rdv.user.prenom }} {{ rdv.user.nom }}</strong>
+          </div>
+
+          <div class="request__actions">
+            <button type="button" class="request__accept" (click)="ask('accept', rdv)" [disabled]="busyId === rdv.idapt">
+              <mat-icon>check</mat-icon>Accepter
+            </button>
+            <button type="button" class="request__refuse" (click)="ask('refuse', rdv)" [disabled]="busyId === rdv.idapt">
+              <mat-icon>close</mat-icon>Refuser
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<p-dialog
+  [header]="pending?.kind === 'accept' ? 'Confirmer le rendez-vous' : 'Refuser la demande'"
+  [visible]="!!pending"
+  (visibleChange)="$event ? null : cancelAction()"
+  [modal]="true"
+  [style]="{width: '480px', maxWidth: '92vw'}"
+  [baseZIndex]="10000">
+  <p class="request-dialog__text" *ngIf="pending">
+    <ng-container *ngIf="pending.kind === 'accept'; else refuseText">
+      Confirmer le rendez-vous de <strong>{{ patientName(pending.rdv) }}</strong>
+      le <strong>{{ pending.rdv.dateOfApt | date:'EEEE d MMMM yyyy' }}</strong>
+      à <strong>{{ pending.rdv.dateOfApt | date:'HH:mm' }}</strong> ?
+      Le patient recevra une confirmation par e-mail et sera ajouté à la liste des patients s’il n’y figure pas.
+    </ng-container>
+    <ng-template #refuseText>
+      Refuser la demande de <strong>{{ patientName(pending.rdv) }}</strong>
+      pour le <strong>{{ pending.rdv.dateOfApt | date:'EEEE d MMMM yyyy' }}</strong>
+      à <strong>{{ pending.rdv.dateOfApt | date:'HH:mm' }}</strong> ?
+      Le patient sera prévenu par e-mail et le créneau redeviendra disponible.
+    </ng-template>
+  </p>
+  <div class="request-dialog__actions">
+    <button type="button" class="request-dialog__cancel" (click)="cancelAction()">Annuler</button>
+    <button
+      type="button"
+      [class.request__accept]="pending?.kind === 'accept'"
+      [class.request__refuse]="pending?.kind === 'refuse'"
+      (click)="confirmAction()">
+      {{ pending?.kind === 'accept' ? 'Confirmer' : 'Refuser la demande' }}
+    </button>
+  </div>
+</p-dialog>

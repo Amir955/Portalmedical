@@ -1,0 +1,403 @@
+:host {
+  display: block;
+}
+
+.cal-card {
+  padding: 1.25rem 1.4rem 1.4rem;
+}
+
+.cal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.cal-stats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.cal-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--portal-border);
+  border-radius: 12px;
+  background: var(--portal-background);
+}
+
+.cal-stat__value {
+  color: var(--portal-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.cal-stat__label {
+  color: var(--portal-muted);
+  font-size: var(--portal-text-sm);
+}
+
+/* ---------------------------------------------------------------- FullCalendar */
+
+:host ::ng-deep .fc {
+  font-family: var(--portal-font);
+  color: var(--portal-text);
+}
+
+:host ::ng-deep .fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+:host ::ng-deep .fc .fc-toolbar-title {
+  color: var(--portal-primary);
+  font-size: 1.35rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button,
+:host ::ng-deep .fc .fc-toolbar .fc-button-primary {
+  height: 38px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--portal-border);
+  border-radius: 10px;
+  background: var(--portal-surface);
+  color: var(--portal-primary);
+  font-size: var(--portal-text-sm);
+  font-weight: 700;
+  text-transform: none;
+  box-shadow: none;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button:hover:not(:disabled) {
+  border-color: var(--portal-accent);
+  background: var(--portal-surface);
+  color: var(--portal-accent-strong);
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button:focus,
+:host ::ng-deep .fc .fc-toolbar .fc-button-primary:focus {
+  box-shadow: 0 0 0 3px rgba(32, 197, 179, 0.2);
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button:disabled {
+  border-color: var(--portal-border);
+  background: var(--portal-background);
+  color: var(--portal-muted);
+  opacity: 1;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button-group {
+  gap: 0;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button-group > .fc-button {
+  border-radius: 0;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button-group > .fc-button:first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button-group > .fc-button:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-button-primary:not(:disabled).fc-button-active,
+:host ::ng-deep .fc .fc-toolbar .fc-button-primary:not(:disabled):active {
+  border-color: var(--portal-primary);
+  background: var(--portal-primary);
+  color: #ffffff;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-prev-button,
+:host ::ng-deep .fc .fc-toolbar .fc-next-button {
+  width: 38px;
+  padding: 0;
+}
+
+:host ::ng-deep .fc .fc-toolbar .fc-today-button {
+  margin-left: 0.5rem !important;
+  border-radius: 10px !important;
+}
+
+:host ::ng-deep .fc-theme-standard .fc-scrollgrid {
+  border: 1px solid var(--portal-border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .fc-theme-standard td,
+:host ::ng-deep .fc-theme-standard th {
+  border-color: var(--portal-border);
+}
+
+:host ::ng-deep .fc .fc-col-header-cell {
+  padding: 0.6rem 0;
+  background: var(--portal-background);
+}
+
+:host ::ng-deep .fc .fc-col-header-cell-cushion {
+  color: var(--portal-muted);
+  font-size: var(--portal-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day:hover {
+  background: #f6fbfa;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day-frame {
+  min-height: 110px;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  margin: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  color: var(--portal-primary);
+  font-size: var(--portal-text-sm);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+:host ::ng-deep .fc .fc-day-other .fc-daygrid-day-number {
+  color: #b6c1cd;
+}
+
+:host ::ng-deep .fc .fc-day-today {
+  background: #f1fbf9 !important;
+}
+
+:host ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
+  background: var(--portal-accent-strong);
+  color: #ffffff;
+}
+
+:host ::ng-deep .fc .fc-daygrid-event {
+  margin: 2px 6px;
+  padding: 3px 8px;
+  border: 0;
+  border-left: 3px solid var(--portal-accent-strong);
+  border-radius: 0;
+  background: #e6f7f4;
+  color: var(--portal-primary);
+  font-size: var(--portal-text-xs);
+  cursor: pointer;
+}
+
+:host ::ng-deep .fc .fc-daygrid-event:hover {
+  background: #d4f1ec;
+}
+
+:host ::ng-deep .fc .fc-daygrid-event-dot {
+  display: none;
+}
+
+:host ::ng-deep .fc .fc-event-time {
+  margin-right: 4px;
+  color: var(--portal-accent-strong);
+  font-weight: 800;
+}
+
+:host ::ng-deep .fc .fc-event-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+:host ::ng-deep .fc .fc-daygrid-more-link {
+  margin-left: 8px;
+  color: var(--portal-accent-strong);
+  font-size: var(--portal-text-xs);
+  font-weight: 700;
+}
+
+:host ::ng-deep .fc .fc-highlight {
+  background: rgba(32, 197, 179, 0.12);
+}
+
+/* ---------------------------------------------------------------- Dialogs */
+
+.cal-switch {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  padding: 0.25rem;
+  border-radius: 12px;
+  background: var(--portal-background);
+}
+
+.cal-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 38px;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--portal-muted);
+  font-size: var(--portal-text-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cal-switch button .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.cal-switch button.is-active {
+  background: #ffffff;
+  color: var(--portal-primary);
+  box-shadow: 0 2px 8px rgba(31, 58, 95, 0.1);
+}
+
+.cal-option-hint {
+  color: var(--portal-muted);
+  font-size: var(--portal-text-xs);
+}
+
+.cal-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 0.5rem;
+  margin: -0.25rem 0 0.5rem;
+}
+
+.cal-slot {
+  min-height: 40px;
+  border: 1px solid var(--portal-border);
+  border-radius: 10px;
+  background: var(--portal-surface);
+  color: var(--portal-primary);
+  font-size: var(--portal-text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.cal-slot:hover:not(:disabled) {
+  border-color: var(--portal-accent);
+  color: var(--portal-accent-strong);
+}
+
+.cal-slot.is-selected {
+  border-color: var(--portal-accent-strong);
+  background: var(--portal-accent-strong);
+  color: #ffffff;
+}
+
+.cal-slot.is-off,
+.cal-slot:disabled {
+  border-style: dashed;
+  background: #f3f5f8;
+  color: #a7b2be;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.cal-patient {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--portal-border);
+  border-radius: 14px;
+  background: var(--portal-background);
+}
+
+.cal-patient__avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--portal-primary);
+  color: #ffffff;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cal-patient__text {
+  display: grid;
+  min-width: 0;
+}
+
+.cal-patient__text strong {
+  color: var(--portal-primary);
+  font-size: 1.05rem;
+}
+
+.cal-patient__text span {
+  overflow: hidden;
+  color: var(--portal-muted);
+  font-size: var(--portal-text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cal-patient__text a {
+  color: var(--portal-accent-strong);
+  text-decoration: none;
+}
+
+.cal-confirm {
+  padding: 0.85rem 1rem;
+  border: 1px solid #f2c4c4;
+  border-radius: 12px;
+  background: #fcefef;
+}
+
+.cal-confirm__text {
+  color: #7a2424;
+  font-size: var(--portal-text-sm);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .cal-card {
+    padding: 1rem;
+  }
+
+  :host ::ng-deep .fc .fc-toolbar.fc-header-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :host ::ng-deep .fc .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+  }
+
+  :host ::ng-deep .fc .fc-daygrid-day-frame {
+    min-height: 72px;
+  }
+
+  :host ::ng-deep .fc .fc-event-time {
+    display: none;
+  }
+}

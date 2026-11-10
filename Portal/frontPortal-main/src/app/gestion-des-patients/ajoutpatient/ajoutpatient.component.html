@@ -1,0 +1,95 @@
+<form class="pf" [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <header class="pm-dialog-head">
+    <div>
+      <h2>{{ title }}</h2>
+      <p>Les champs marqués d’un astérisque sont obligatoires.</p>
+    </div>
+    <button type="button" class="pm-icon-btn" (click)="close()" aria-label="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <div class="pm-dialog-body">
+    <div class="form-alert" role="alert" *ngIf="formError">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span><strong>Patient non enregistré</strong>{{ formError }}</span>
+    </div>
+
+    <p class="pm-form-group">Identité</p>
+    <div class="pm-form-grid">
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom" autocomplete="off" required>
+        <mat-error>Le prénom est requis.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom" autocomplete="off" required>
+        <mat-error>Le nom est requis.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Date de naissance</mat-label>
+        <input matInput formControlName="age" [matDatepicker]="birthPicker" [max]="today" placeholder="jj/mm/aaaa">
+        <mat-datepicker-toggle matSuffix [for]="birthPicker"></mat-datepicker-toggle>
+        <mat-datepicker #birthPicker startView="multi-year"></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>CIN</mat-label>
+        <input matInput formControlName="cin" maxlength="8" inputmode="numeric" autocomplete="off">
+        <mat-error>Le CIN contient 8 chiffres.</mat-error>
+      </mat-form-field>
+      <div class="pf-gender pm-span-2">
+        <span class="pf-gender__label">Genre</span>
+        <mat-radio-group formControlName="sexe" aria-label="Genre">
+          <mat-radio-button value="Femme">Femme</mat-radio-button>
+          <mat-radio-button value="Homme">Homme</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+
+    <p class="pm-form-group">Contact</p>
+    <div class="pm-form-grid">
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Adresse e-mail</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="off" placeholder="nom@exemple.com" required>
+        <mat-error>Adresse e-mail invalide.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Téléphone</mat-label>
+        <input matInput type="tel" formControlName="numtelephone" autocomplete="off" placeholder="22 123 456">
+        <mat-error>Numéro de téléphone invalide.</mat-error>
+      </mat-form-field>
+    </div>
+
+    <p class="pm-form-group">Adresse</p>
+    <div class="pm-form-grid">
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Gouvernorat</mat-label>
+        <mat-select formControlName="gouvernerat">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let g of gouvernorats" [value]="g.value">{{ g.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Ville</mat-label>
+        <input matInput formControlName="ville" autocomplete="off">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Code postal</mat-label>
+        <input matInput formControlName="codepostal" maxlength="4" inputmode="numeric" autocomplete="off">
+        <mat-error>Le code postal contient 4 chiffres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Pays</mat-label>
+        <input matInput formControlName="pays" autocomplete="off">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <footer class="pm-dialog-foot">
+    <button type="button" class="pm-btn pm-btn--secondary" (click)="close()">Annuler</button>
+    <button type="submit" class="pm-btn pm-btn--primary" [disabled]="saving">
+      {{ saving ? 'Enregistrement…' : (editing ? 'Enregistrer les modifications' : 'Ajouter le patient') }}
+    </button>
+  </footer>
+</form>

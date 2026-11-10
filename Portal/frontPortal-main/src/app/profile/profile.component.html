@@ -1,0 +1,210 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <div class="portal-hero">
+      <div class="portal-hero__icon">
+        <mat-icon>manage_accounts</mat-icon>
+      </div>
+      <div>
+        <h1 class="portal-hero__title">Mon compte</h1>
+        <p class="portal-hero__subtitle">Vos informations, votre mot de passe<ng-container *ngIf="isDoctor"> et votre secrétariat</ng-container>.</p>
+      </div>
+    </div>
+
+    <div class="account" *ngIf="!loading; else profileLoading">
+      <!-- Side menu -->
+      <aside class="portal-card account-side">
+        <div class="account-id">
+          <div class="account-id__avatar">{{ getInitials() }}</div>
+          <div class="account-id__text">
+            <strong>{{ editableUser.prenom }} {{ editableUser.nom }}</strong>
+            <span class="account-id__role">{{ roleLabel }}</span>
+            <span class="account-id__email">{{ editableUser.email }}</span>
+          </div>
+        </div>
+
+        <nav class="account-nav" aria-label="Sections du compte">
+          <button
+            type="button"
+            *ngFor="let item of sections"
+            class="account-nav__item"
+            [class.is-active]="section === item.value"
+            [attr.aria-current]="section === item.value ? 'page' : null"
+            (click)="selectSection(item.value)">
+            <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+            <span>
+              <strong>{{ item.label }}</strong>
+              <small>{{ item.hint }}</small>
+            </span>
+            <mat-icon class="account-nav__chevron" aria-hidden="true">chevron_right</mat-icon>
+          </button>
+        </nav>
+
+        <button type="button" class="account-back" (click)="goToDashboard()">
+          <mat-icon aria-hidden="true">calendar_month</mat-icon>Retour au calendrier
+        </button>
+      </aside>
+
+      <div class="account-main">
+        <!-- Personal details -->
+        <section class="portal-card account-panel" *ngIf="section === 'infos'">
+          <header class="account-panel__head">
+            <div>
+              <h2>Mes informations</h2>
+              <p>Ces informations apparaissent sur vos documents et dans les e-mails envoyés aux patients.</p>
+            </div>
+          </header>
+
+          <div class="form-alert" role="alert" *ngIf="infosError">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span><strong>Informations non enregistrées</strong>{{ infosError }}</span>
+          </div>
+
+          <form class="account-form" (ngSubmit)="saveInfos()" novalidate>
+            <p class="account-form__group">Identité</p>
+            <div class="profile-grid">
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Prénom</mat-label>
+                <input matInput name="prenom" [(ngModel)]="editableUser.prenom" autocomplete="given-name">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Nom</mat-label>
+                <input matInput name="nom" [(ngModel)]="editableUser.nom" autocomplete="family-name">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Date de naissance</mat-label>
+                <input matInput name="age" [(ngModel)]="editableUser.age" [matDatepicker]="birthPicker">
+                <mat-datepicker-toggle matSuffix [for]="birthPicker"></mat-datepicker-toggle>
+                <mat-datepicker #birthPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>CIN</mat-label>
+                <input matInput name="cin" [(ngModel)]="editableUser.cin" maxlength="8" autocomplete="off">
+              </mat-form-field>
+
+              <div class="profile-radio profile-field--full">
+                <span class="profile-radio__label">Genre</span>
+                <mat-radio-group name="sexe" [(ngModel)]="editableUser.sexe" class="portal-modal__choices">
+                  <mat-radio-button *ngFor="let genre of genres" [value]="genre">{{ genre }}</mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+
+            <p class="account-form__group">Coordonnées</p>
+            <div class="profile-grid">
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Adresse e-mail</mat-label>
+                <input matInput name="email" [ngModel]="editableUser.email" readonly>
+                <mat-hint>Votre identifiant de connexion ne peut pas être modifié ici.</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Téléphone</mat-label>
+                <input matInput name="numtelephone" [(ngModel)]="editableUser.numtelephone" maxlength="8" autocomplete="tel">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Pays</mat-label>
+                <input matInput name="pays" [(ngModel)]="editableUser.pays" autocomplete="country-name">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Gouvernorat</mat-label>
+                <mat-select name="gouvernerat" [(ngModel)]="editableUser.gouvernerat">
+                  <mat-option *ngFor="let g of gouvernerats" [value]="g.value">{{ g.label }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Ville</mat-label>
+                <input matInput name="ville" [(ngModel)]="editableUser.ville" autocomplete="address-level2">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-field">
+                <mat-label>Code postal</mat-label>
+                <input matInput name="codepostal" [(ngModel)]="editableUser.codepostal" type="number" autocomplete="postal-code">
+              </mat-form-field>
+            </div>
+
+            <div class="account-form__actions">
+              <button type="submit" class="account-primary" [disabled]="savingInfos">
+                {{ savingInfos ? 'Enregistrement…' : 'Enregistrer les modifications' }}
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Password -->
+        <section class="portal-card account-panel account-panel--narrow" *ngIf="section === 'password'">
+          <header class="account-panel__head">
+            <div>
+              <h2>Changer votre mot de passe</h2>
+              <p>Choisissez un mot de passe que vous n’utilisez sur aucun autre site.</p>
+            </div>
+          </header>
+
+          <div class="form-alert" role="alert" *ngIf="passwordError">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span><strong>Mot de passe non modifié</strong>{{ passwordError }}</span>
+          </div>
+
+          <form class="account-form" (ngSubmit)="savePassword()" novalidate>
+            <mat-form-field appearance="outline" class="profile-field">
+              <mat-label>Nouveau mot de passe</mat-label>
+              <mat-icon matPrefix class="account-prefix">lock</mat-icon>
+              <input matInput name="newPassword" [type]="hideNew ? 'password' : 'text'" [(ngModel)]="newPassword"
+                     (ngModelChange)="clearPasswordError()" autocomplete="new-password">
+              <button type="button" matSuffix class="auth-visibility" (click)="hideNew = !hideNew"
+                      [attr.aria-label]="hideNew ? 'Afficher le mot de passe' : 'Masquer le mot de passe'">
+                <mat-icon>{{ hideNew ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="profile-field">
+              <mat-label>Confirmer le nouveau mot de passe</mat-label>
+              <mat-icon matPrefix class="account-prefix">lock_outline</mat-icon>
+              <input matInput name="confirmPassword" [type]="hideConfirm ? 'password' : 'text'" [(ngModel)]="confirmPassword"
+                     (ngModelChange)="clearPasswordError()" autocomplete="new-password">
+              <button type="button" matSuffix class="auth-visibility" (click)="hideConfirm = !hideConfirm"
+                      [attr.aria-label]="hideConfirm ? 'Afficher le mot de passe' : 'Masquer le mot de passe'">
+                <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <ul class="auth-rules" aria-live="polite">
+              <li [class.is-met]="hasMinLength">
+                <mat-icon aria-hidden="true">{{ hasMinLength ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                Au moins {{ minPasswordLength }} caractères
+              </li>
+              <li [class.is-met]="hasLetterAndDigit">
+                <mat-icon aria-hidden="true">{{ hasLetterAndDigit ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                Des lettres et au moins un chiffre (recommandé)
+              </li>
+              <li [class.is-met]="passwordsMatch">
+                <mat-icon aria-hidden="true">{{ passwordsMatch ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                Les deux mots de passe sont identiques
+              </li>
+            </ul>
+
+            <div class="account-form__actions">
+              <button type="submit" class="account-primary" [disabled]="savingPassword">
+                {{ savingPassword ? 'Modification…' : 'Changer le mot de passe' }}
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Secretaries (doctors) -->
+        <app-secretariat *ngIf="section === 'secretariat' && isDoctor"></app-secretariat>
+      </div>
+    </div>
+
+    <ng-template #profileLoading>
+      <div class="portal-card portal-card--spacious profile-loading">Chargement du profil…</div>
+    </ng-template>
+  </div>
+</section>

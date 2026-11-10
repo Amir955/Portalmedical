@@ -1,0 +1,56 @@
+<app-auth-shell
+  eyebrow="Espace sécurisé"
+  heading="Bon retour parmi nous"
+  text="Connectez-vous pour retrouver vos rendez-vous, vos patients et vos documents médicaux.">
+
+  <p class="auth-eyebrow">Connexion</p>
+  <h1 class="auth-title">S'identifier</h1>
+  <p class="auth-subtitle">Accédez à votre espace avec votre adresse e-mail et votre mot de passe.</p>
+
+  <form [formGroup]="loginForm" class="auth-form" (ngSubmit)="signIn()" novalidate>
+    <div class="form-alert" role="alert" *ngIf="formError">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span><strong>Connexion impossible</strong>{{ formError }}</span>
+    </div>
+
+    <mat-form-field appearance="outline" class="auth-field">
+      <mat-label>Adresse e-mail</mat-label>
+      <mat-icon matPrefix>mail</mat-icon>
+      <input matInput type="email" autocomplete="email" placeholder="nom@exemple.com" [formControl]="email" required>
+      <mat-error *ngIf="email.invalid">{{ getErrorEmailMessage() }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="auth-field">
+      <mat-label>Mot de passe</mat-label>
+      <mat-icon matPrefix>lock</mat-icon>
+      <input
+        matInput
+        [type]="hide ? 'password' : 'text'"
+        autocomplete="current-password"
+        placeholder="Votre mot de passe"
+        [formControl]="password"
+        required>
+      <button
+        type="button"
+        matSuffix
+        class="auth-visibility"
+        (click)="hide = !hide"
+        [attr.aria-label]="hide ? 'Afficher le mot de passe' : 'Masquer le mot de passe'">
+        <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="password.invalid">{{ getErrorPasswordMessage() }}</mat-error>
+    </mat-form-field>
+
+    <div class="auth-row">
+      <button type="button" class="auth-text-button" (click)="openDialog()">Mot de passe oublié ?</button>
+    </div>
+
+    <button type="submit" class="auth-primary" [disabled]="!loginForm.valid || submitting">
+      {{ submitting ? 'Connexion…' : 'Se connecter' }}
+    </button>
+  </form>
+
+  <p class="auth-footer">
+    Pas encore de compte ? <a routerLink="/inscription">Créer un compte</a>
+  </p>
+</app-auth-shell>

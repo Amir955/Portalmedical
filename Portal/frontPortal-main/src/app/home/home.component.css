@@ -1,0 +1,4 @@
+/* Layout and form styles are shared with the other account pages: see "Account pages" in styles.css. */
+:host {
+  display: block;
+}

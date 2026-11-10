@@ -1,0 +1,148 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <header class="db-head">
+      <div>
+        <p class="db-date">{{ today | date:'EEEE d MMMM yyyy' }}</p>
+        <h1 class="db-title">{{ greeting }}</h1>
+        <p class="db-subtitle" *ngIf="!loading">
+          <ng-container *ngIf="todayAppointments.length; else freeDay">
+            Vous avez {{ todayAppointments.length }} rendez-vous aujourd’hui<ng-container *ngIf="requests.length"> et {{ requests.length }} demande(s) en attente</ng-container>.
+          </ng-container>
+          <ng-template #freeDay>
+            Aucun rendez-vous aujourd’hui<ng-container *ngIf="requests.length"> · {{ requests.length }} demande(s) en attente</ng-container>.
+          </ng-template>
+        </p>
+      </div>
+      <div class="db-head__actions">
+        <button type="button" class="pm-btn pm-btn--secondary" (click)="newPatient()">
+          <mat-icon>person_add</mat-icon>Nouveau patient
+        </button>
+        <button type="button" class="pm-btn pm-btn--primary" (click)="newAppointment()">
+          <mat-icon>add</mat-icon>Nouveau rendez-vous
+        </button>
+      </div>
+    </header>
+
+    <!-- Key figures -->
+    <div class="db-stats">
+      <a class="db-stat" routerLink="/calender">
+        <span class="db-stat__icon"><mat-icon>today</mat-icon></span>
+        <span class="db-stat__body">
+          <strong>{{ todayAppointments.length }}</strong>
+          <span>Rendez-vous aujourd’hui</span>
+        </span>
+      </a>
+      <a class="db-stat" routerLink="/calender">
+        <span class="db-stat__icon"><mat-icon>date_range</mat-icon></span>
+        <span class="db-stat__body">
+          <strong>{{ weekCount }}</strong>
+          <span>Cette semaine</span>
+        </span>
+      </a>
+      <a class="db-stat" routerLink="/listeRDV" [class.db-stat--alert]="requests.length">
+        <span class="db-stat__icon"><mat-icon>inbox</mat-icon></span>
+        <span class="db-stat__body">
+          <strong>{{ requests.length }}</strong>
+          <span>Demande(s) en attente</span>
+        </span>
+      </a>
+      <a class="db-stat" routerLink="/gestiondespatients">
+        <span class="db-stat__icon"><mat-icon>groups</mat-icon></span>
+        <span class="db-stat__body">
+          <strong>{{ patients.length }}</strong>
+          <span>Patients<ng-container *ngIf="newPatientsThisMonth"> · +{{ newPatientsThisMonth }} ce mois</ng-container></span>
+        </span>
+      </a>
+    </div>
+
+    <div class="db-grid">
+      <!-- Today -->
+      <section class="portal-card db-card">
+        <header class="db-card__head">
+          <h2>Aujourd’hui</h2>
+          <a routerLink="/calender" class="db-link">Ouvrir le calendrier</a>
+        </header>
+
+        <div class="db-empty" *ngIf="loading">Chargement…</div>
+
+        <div class="db-empty" *ngIf="!loading && !todayAppointments.length">
+          <mat-icon>event_available</mat-icon>
+          <strong>Journée libre</strong>
+          <span>Aucun rendez-vous confirmé aujourd’hui.</span>
+        </div>
+
+        <ol class="db-timeline" *ngIf="!loading && todayAppointments.length">
+          <li *ngFor="let rdv of todayAppointments" class="db-slot"
+              [class.is-past]="isPast(rdv)" [class.is-next]="rdv === nextToday">
+            <span class="db-slot__time">{{ rdv.dateOfApt | date:'HH:mm' }}</span>
+            <span class="db-slot__body">
+              <strong>{{ patientName(rdv) }}</strong>
+              <span *ngIf="patientPhone(rdv) || rdv.patientEmail">
+                <a *ngIf="patientPhone(rdv)" [href]="phoneLink(patientPhone(rdv))">{{ patientPhone(rdv) }}</a>
+                <ng-container *ngIf="patientPhone(rdv) && rdv.patientEmail"> · </ng-container>
+                <ng-container *ngIf="rdv.patientEmail">{{ rdv.patientEmail }}</ng-container>
+              </span>
+            </span>
+            <span class="db-slot__tag" *ngIf="rdv === nextToday">Prochain</span>
+            <span class="db-slot__tag db-slot__tag--done" *ngIf="isPast(rdv)">Passé</span>
+          </li>
+        </ol>
+      </section>
+
+      <div class="db-side">
+        <!-- Requests -->
+        <section class="portal-card db-card">
+          <header class="db-card__head">
+            <h2>Demandes en attente</h2>
+            <a routerLink="/listeRDV" class="db-link" *ngIf="requests.length">Tout voir</a>
+          </header>
+
+          <div class="db-empty db-empty--small" *ngIf="!requests.length">
+            <mat-icon>inbox</mat-icon>
+            <span>Aucune demande à traiter.</span>
+          </div>
+
+          <ul class="db-list" *ngIf="requests.length">
+            <li *ngFor="let rdv of requests.slice(0, 4)">
+              <a routerLink="/listeRDV" class="db-list__item">
+                <span class="db-list__avatar">{{ patientName(rdv).charAt(0) }}</span>
+                <span class="db-list__text">
+                  <strong>{{ patientName(rdv) }}</strong>
+                  <span>Pour le {{ rdv.dateOfApt | date:'EEE d MMM à HH:mm' }}</span>
+                </span>
+                <mat-icon>chevron_right</mat-icon>
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Upcoming -->
+        <section class="portal-card db-card">
+          <header class="db-card__head">
+            <h2>Prochains jours</h2>
+          </header>
+
+          <div class="db-empty db-empty--small" *ngIf="!loading && !upcoming.length">
+            <mat-icon>event</mat-icon>
+            <span>Aucun rendez-vous à venir.</span>
+          </div>
+
+          <ul class="db-list" *ngIf="upcoming.length">
+            <li *ngFor="let rdv of upcoming" class="db-list__item db-list__item--static">
+              <span class="db-list__date">
+                <strong>{{ rdv.dateOfApt | date:'d' }}</strong>
+                <span>{{ rdv.dateOfApt | date:'MMM' }}</span>
+              </span>
+              <span class="db-list__text">
+                <strong>{{ patientName(rdv) }}</strong>
+                <span>{{ rdv.dateOfApt | date:'EEEE à HH:mm' }}</span>
+              </span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>

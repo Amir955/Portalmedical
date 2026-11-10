@@ -1,0 +1,61 @@
+<section class="landing-page">
+  <header class="landing-navbar">
+    <a class="brand" [routerLink]="['/']" aria-label="PortalMedical accueil">
+      <img src="assets/img/favicon.svg" alt="Logo PortalMedical" class="brand-mark">
+      <div class="brand-copy">
+        <span class="brand-title">
+          <span class="brand-title-portal">Portal</span><span class="brand-title-medical">Medical</span>
+        </span>
+        <span class="brand-tagline">Accessible. Sécurisé. Humain.</span>
+      </div>
+    </a>
+
+    <a class="login-link" [routerLink]="['/login']">Connectez-vous</a>
+  </header>
+
+  <div class="landing-content">
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p class="hero-eyebrow">Portail patient et médecin</p>
+        <h1>Votre santé, accessible simplement</h1>
+        <p class="hero-description">
+          Prenez rendez-vous, gérez vos consultations et vos documents médicaux dans
+          un espace sécurisé.
+        </p>
+
+        <div class="hero-actions">
+          <a class="hero-button hero-button-primary" [routerLink]="['/demandeRDV']">
+            Demander un rendez-vous
+          </a>
+          <a class="hero-button hero-button-secondary" [routerLink]="['/login']">
+            Se connecter
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual-card">
+        <img src="assets/img/logo.svg" alt="PortalMedical" class="hero-logo">
+      </div>
+    </section>
+
+    <section class="feature-grid">
+      <article class="feature-card">
+        <div class="feature-icon">01</div>
+        <h2>Rendez-vous simplifiés</h2>
+        <p>Planifiez rapidement une demande et suivez vos disponibilités sans friction.</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon">02</div>
+        <h2>Dossiers sécurisés</h2>
+        <p>Vos documents et informations médicales restent centralisés dans un espace fiable.</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon">03</div>
+        <h2>Consultation rapide</h2>
+        <p>Retrouvez l'historique, les ordonnances et les suivis en quelques clics.</p>
+      </article>
+    </section>
+  </div>
+</section>

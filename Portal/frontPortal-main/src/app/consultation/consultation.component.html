@@ -1,0 +1,533 @@
+<app-navbar></app-navbar>
+
+<section class="consultation-shell">
+  <div class="hero">
+    <p class="eyebrow">Consultation</p>
+    <h1>Espace de consultation</h1>
+    <p class="hero-text">
+      Un seul patient sélectionné, puis tous les documents de consultation restent dans le même espace.
+    </p>
+  </div>
+
+  <div class="workflow-strip">
+    <div class="workflow-step">
+      <span>1</span>
+      <div>
+        <strong>Choisir le patient</strong>
+        <p>Recherche par nom, prénom, email, CIN, téléphone ou date.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <span>2</span>
+      <div>
+        <strong>Choisir le document</strong>
+        <p>Fiche, ordonnance, certificat ou lettre restent au même endroit.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <span>3</span>
+      <div>
+        <strong>Rédiger et valider</strong>
+        <p>Les informations du patient sont déjà présentes dans le contexte.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <mat-card class="panel search-panel">
+      <div class="panel-head">
+        <div>
+          <p class="panel-kicker">Recherche patient</p>
+          <h2>Retrouver rapidement un dossier</h2>
+        </div>
+        <button type="button" class="ghost-btn" (click)="loadPatients()">Actualiser</button>
+      </div>
+
+      <mat-form-field appearance="fill" class="search-field">
+        <mat-label>Nom, prénom, email, CIN, téléphone, date de naissance...</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="applyPatientFilter()" />
+      </mat-form-field>
+
+      <div class="results-meta">
+        <span>{{ filteredPatients.length }} patient(s)</span>
+        <span *ngIf="selectedPatient">Sélectionné: {{ getPatientLabel(selectedPatient) }}</span>
+      </div>
+
+      <div class="patient-list" *ngIf="!loadingPatients; else loadingPatientsTpl">
+        <button
+          type="button"
+          class="patient-item"
+          *ngFor="let patient of filteredPatients"
+          [class.active]="selectedPatient?.id === patient.id"
+          (click)="selectPatient(patient)">
+          <span class="patient-name">{{ getPatientLabel(patient) }}</span>
+          <span class="patient-meta">{{ getPatientMeta(patient) }}</span>
+        </button>
+
+        <div class="empty-state" *ngIf="filteredPatients.length === 0">
+          Aucun patient ne correspond à la recherche.
+        </div>
+      </div>
+
+      <ng-template #loadingPatientsTpl>
+        <div class="empty-state">Chargement des patients...</div>
+      </ng-template>
+    </mat-card>
+
+    <div class="content-column">
+      <mat-card class="panel context-panel" *ngIf="selectedPatient as patient; else noPatientTpl">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">Patient actif</p>
+            <h2>{{ getPatientLabel(patient) }}</h2>
+          </div>
+          <button type="button" class="secondary-btn" (click)="clearPatientSelection()">Changer de patient</button>
+        </div>
+
+        <div class="context-grid">
+          <div>
+            <p><strong>Email:</strong> {{ patient.email || '-' }}</p>
+            <p><strong>Téléphone:</strong> {{ patient.numtelephone || '-' }}</p>
+          </div>
+          <div>
+            <p><strong>Date de naissance:</strong> {{ formatDate(patient.age) || '-' }}</p>
+            <p><strong>CIN:</strong> {{ patient.cin || '-' }}</p>
+          </div>
+        </div>
+      </mat-card>
+
+      <ng-template #noPatientTpl>
+        <mat-card class="panel context-panel muted">
+          <p class="panel-kicker">Patient actif</p>
+          <h2>Choisis d’abord un patient</h2>
+          <p>Une fois sélectionné, tous les documents de consultation restent dans le même espace.</p>
+        </mat-card>
+      </ng-template>
+
+      <mat-card class="panel section-panel">
+        <div class="section-toolbar">
+          <button
+            type="button"
+            *ngFor="let section of sections"
+            class="section-pill"
+            [class.active]="activeSection === section.key"
+            [disabled]="!selectedPatient && section.key !== 'fiche'"
+            (click)="setActiveSection(section.key)">
+            <span>{{ section.label }}</span>
+            <small>{{ section.subtitle }}</small>
+          </button>
+        </div>
+
+        <div class="section-body" *ngIf="selectedPatient; else lockedTpl">
+          <ng-container [ngSwitch]="activeSection">
+            <section *ngSwitchCase="'fiche'" class="section-layout fiche-layout">
+              <div class="section-stack">
+                <div class="section-heading">
+                  <p class="panel-kicker">Historique</p>
+                  <h2>Consultations précédentes</h2>
+                  <span class="count-badge">{{ history.length }}</span>
+                </div>
+
+                <div class="history-list" *ngIf="!loadingHistory; else loadingHistoryTpl">
+                  <article class="history-card" *ngFor="let fiche of history; let i = index">
+                    <div class="history-top">
+                      <div>
+                        <span class="history-title">{{ getConsultationTitle(i) }}</span>
+                        <span class="history-date">{{ getConsultationDate(fiche) }}</span>
+                      </div>
+                    </div>
+                    <p class="history-summary">{{ getConsultationSummary(fiche) }}</p>
+                    <div class="history-details">
+                      <div><strong>Motif:</strong> {{ fiche.causedeconsultation || '-' }}</div>
+                      <div><strong>Examen:</strong> {{ fiche.examen || '-' }}</div>
+                      <div><strong>Suivi:</strong> {{ fiche.suivie || '-' }}</div>
+                    </div>
+                  </article>
+
+                  <div class="empty-state" *ngIf="history.length === 0">
+                    Aucune fiche consultation pour ce patient.
+                  </div>
+                </div>
+
+                <ng-template #loadingHistoryTpl>
+                  <div class="empty-state">Chargement de l’historique...</div>
+                </ng-template>
+              </div>
+
+              <div class="section-stack">
+                <div class="section-heading">
+                  <p class="panel-kicker">Nouvelle fiche</p>
+                  <h2>Ajouter une consultation</h2>
+                  <span class="hint">Titre auto: Consultation {{ history.length + 1 }}</span>
+                </div>
+
+                <form [formGroup]="ficheForm" class="fiche-form">
+                  <div class="form-grid">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Référence / matricule CNAM</mat-label>
+                      <input matInput formControlName="matriculecnam" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill">
+                      <mat-label>Motif de consultation</mat-label>
+                      <input matInput formControlName="causedeconsultation" />
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-grid">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Examen / observations</mat-label>
+                      <textarea matInput rows="6" formControlName="examen"></textarea>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill">
+                      <mat-label>Suivi / plan</mat-label>
+                      <textarea matInput rows="6" formControlName="suivie"></textarea>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="button" class="secondary-btn" (click)="ficheForm.reset({ matriculecnam: selectedPatient?.cin || '' })">
+                      Réinitialiser
+                    </button>
+                    <button type="button" class="primary-btn" (click)="saveFiche()" [disabled]="ficheForm.invalid || saving">
+                      {{ saving ? 'Enregistrement...' : 'Enregistrer la fiche' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </section>
+
+            <section *ngSwitchCase="'ordonnance'" class="section-layout ordonnance-layout">
+              <div class="section-stack ordonnance-editor">
+                <div class="section-heading">
+                  <p class="panel-kicker">Ordonnance</p>
+                  <h2>Prescription structurée</h2>
+                  <span class="hint">Une ligne par médicament, puis un aperçu imprimable.</span>
+                </div>
+
+                <div class="guidelines-grid">
+                  <article class="guideline-card" *ngFor="let tip of ordonnanceTips">
+                    {{ tip }}
+                  </article>
+                </div>
+
+                <div class="ordonnance-context-grid">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Diagnostic / indication</mat-label>
+                    <input matInput [(ngModel)]="ordonnanceContext.diagnostic" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Antécédents utiles</mat-label>
+                    <input matInput [(ngModel)]="ordonnanceContext.antecedents" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Allergies / alertes</mat-label>
+                    <input matInput [(ngModel)]="ordonnanceContext.allergies" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Consigne générale</mat-label>
+                    <input matInput [(ngModel)]="ordonnanceContext.consigne" />
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Suivi / contrôle</mat-label>
+                  <textarea matInput rows="3" [(ngModel)]="ordonnanceContext.suivi"></textarea>
+                </mat-form-field>
+
+                <div class="ordonnance-lines">
+                  <article class="ordonnance-line" *ngFor="let line of ordonnanceLines; let i = index">
+                    <div class="line-head">
+                      <strong>Médicament {{ i + 1 }}</strong>
+                      <button type="button" class="link-btn" (click)="removeOrdonnanceLine(i)" [disabled]="ordonnanceLines.length === 1">
+                        Supprimer
+                      </button>
+                    </div>
+
+                    <div class="line-grid">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Médicament</mat-label>
+                        <input matInput [(ngModel)]="line.medicament" />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Dosage</mat-label>
+                        <input matInput [(ngModel)]="line.dosage" />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Forme</mat-label>
+                        <input matInput [(ngModel)]="line.forme" />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Voie</mat-label>
+                        <input matInput [(ngModel)]="line.voie" />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Fréquence</mat-label>
+                        <input matInput [(ngModel)]="line.frequence" />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Durée</mat-label>
+                        <input matInput [(ngModel)]="line.duree" />
+                      </mat-form-field>
+                    </div>
+
+                    <mat-form-field appearance="fill" class="full-width">
+                      <mat-label>Instructions patient</mat-label>
+                      <textarea matInput rows="3" [(ngModel)]="line.instructions"></textarea>
+                    </mat-form-field>
+                  </article>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="secondary-btn" (click)="addOrdonnanceLine()">Ajouter une ligne</button>
+                  <button type="button" class="primary-btn" [disabled]="generatingPdf" (click)="downloadOrdonnancePdf()">
+                    {{ generatingPdf ? 'Génération…' : 'Télécharger le PDF' }}
+                  </button>
+                </div>
+              </div>
+
+              <aside class="section-stack ordonnance-preview">
+                <div class="section-heading">
+                  <p class="panel-kicker">Aperçu</p>
+                  <h2>Version lisible pour impression</h2>
+                </div>
+
+                <div class="preview-card">
+                  <div class="preview-head">
+                    <div>
+                      <strong>{{ getPatientLabel(selectedPatient) }}</strong>
+                      <p>{{ selectedPatient?.email || '-' }}</p>
+                    </div>
+                    <span>{{ todayLabel }}</span>
+                  </div>
+
+                  <div class="preview-block">
+                    <p><strong>Diagnostic:</strong> {{ ordonnanceContext.diagnostic || '-' }}</p>
+                    <p><strong>Allergies:</strong> {{ ordonnanceContext.allergies || '-' }}</p>
+                    <p><strong>Suivi:</strong> {{ ordonnanceContext.suivi || '-' }}</p>
+                  </div>
+
+                  <div class="preview-block">
+                    <strong>Prescriptions</strong>
+                    <ul *ngIf="getOrdonnancePreview().length > 0; else noPreviewTpl">
+                      <li *ngFor="let item of getOrdonnancePreview()">{{ item }}</li>
+                    </ul>
+                    <ng-template #noPreviewTpl>
+                      <p>Aucune ligne renseignée pour le moment.</p>
+                    </ng-template>
+                  </div>
+                </div>
+
+                <div class="ordonnance-print-sheet">
+                  <div class="print-header">
+                    <div>
+                      <p class="print-kicker">Ordonnance</p>
+                      <h1>PortalMedical</h1>
+                      <p>Patient: {{ getPatientLabel(selectedPatient) }}</p>
+                      <p>Date: {{ todayLabel }}</p>
+                    </div>
+                    <div class="print-meta">
+                      <p><strong>Email:</strong> {{ selectedPatient?.email || '-' }}</p>
+                      <p><strong>Téléphone:</strong> {{ selectedPatient?.numtelephone || '-' }}</p>
+                      <p><strong>CIN:</strong> {{ selectedPatient?.cin || '-' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="print-block">
+                    <h2>Contexte clinique</h2>
+                    <p><strong>Diagnostic:</strong> {{ ordonnanceContext.diagnostic || '-' }}</p>
+                    <p><strong>Antécédents:</strong> {{ ordonnanceContext.antecedents || '-' }}</p>
+                    <p><strong>Allergies:</strong> {{ ordonnanceContext.allergies || '-' }}</p>
+                    <p><strong>Consigne:</strong> {{ ordonnanceContext.consigne || '-' }}</p>
+                    <p><strong>Suivi:</strong> {{ ordonnanceContext.suivi || '-' }}</p>
+                  </div>
+
+                  <div class="print-block">
+                    <h2>Prescription</h2>
+                    <ul>
+                      <li *ngFor="let item of getOrdonnancePreview()">{{ item }}</li>
+                    </ul>
+                  </div>
+
+                  <div class="print-footer">
+                    <div>
+                      <p>Cachet et signature du médecin</p>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </section>
+
+            <section *ngSwitchCase="'certificat-medical'" class="section-layout">
+              <div class="section-stack">
+                <div class="section-heading">
+                  <p class="panel-kicker">Certificat médical</p>
+                  <h2>Repos et justification</h2>
+                  <span class="hint">Indiquez la durée du repos : « 3 » devient « 3 jours » sur le PDF.</span>
+                </div>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Durée du repos</mat-label>
+                  <input matInput [(ngModel)]="certificateMedical.repos" placeholder="ex. 3 ou une semaine" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Observations / justification</mat-label>
+                  <textarea matInput rows="6" [(ngModel)]="certificateMedical.note"></textarea>
+                </mat-form-field>
+
+                <div class="form-actions">
+                  <button type="button" class="primary-btn" [disabled]="generatingPdf" (click)="downloadDocumentPdf('certificat-medical')">
+                    {{ generatingPdf ? 'Génération…' : 'Télécharger le PDF' }}
+                  </button>
+                </div>
+              </div>
+
+              <aside class="section-stack">
+                <article class="doc-preview">
+                  <header class="doc-preview__head">
+                    <span class="doc-preview__type">Certificat médical</span>
+                    <span class="doc-preview__date">Le {{ todayLabel }}</span>
+                  </header>
+                  <p class="doc-preview__patient">{{ getPatientLabel(selectedPatient) }}</p>
+                  <div class="doc-preview__figure" *ngIf="certificateMedical.repos">
+                    <span>Repos prescrit</span>
+                    <strong>{{ certificateMedical.repos }}</strong>
+                  </div>
+                  <p class="doc-preview__text" [class.is-empty]="!certificateMedical.note">
+                    {{ certificateMedical.note || 'Les observations apparaîtront ici.' }}
+                  </p>
+                  <footer class="doc-preview__sign">Signature et cachet</footer>
+                </article>
+              </aside>
+            </section>
+
+            <section *ngSwitchCase="'certificat-aptitude'" class="section-layout">
+              <div class="section-stack">
+                <div class="section-heading">
+                  <p class="panel-kicker">Certificat d’aptitude</p>
+                  <h2>Aptitude à une activité</h2>
+                  <span class="hint">Précisez l’activité ou le poste concerné.</span>
+                </div>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Profession / activité</mat-label>
+                  <input matInput [(ngModel)]="certificateAptitude.profession" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>État de santé constaté</mat-label>
+                  <input matInput [(ngModel)]="certificateAptitude.etatSante" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Observations / conclusion</mat-label>
+                  <textarea matInput rows="5" [(ngModel)]="certificateAptitude.note"></textarea>
+                </mat-form-field>
+
+                <div class="form-actions">
+                  <button type="button" class="primary-btn" [disabled]="generatingPdf" (click)="downloadDocumentPdf('certificat-aptitude')">
+                    {{ generatingPdf ? 'Génération…' : 'Télécharger le PDF' }}
+                  </button>
+                </div>
+              </div>
+
+              <aside class="section-stack">
+                <article class="doc-preview">
+                  <header class="doc-preview__head">
+                    <span class="doc-preview__type">Certificat d’aptitude</span>
+                    <span class="doc-preview__date">Le {{ todayLabel }}</span>
+                  </header>
+                  <p class="doc-preview__patient">{{ getPatientLabel(selectedPatient) }}</p>
+                  <dl class="doc-preview__rows">
+                    <dt>Profession / activité</dt>
+                    <dd>{{ certificateAptitude.profession || '—' }}</dd>
+                    <dt>État de santé</dt>
+                    <dd>{{ certificateAptitude.etatSante || '—' }}</dd>
+                  </dl>
+                  <p class="doc-preview__text" [class.is-empty]="!certificateAptitude.note">
+                    {{ certificateAptitude.note || 'Les observations apparaîtront ici.' }}
+                  </p>
+                  <footer class="doc-preview__sign">Signature et cachet</footer>
+                </article>
+              </aside>
+            </section>
+
+            <section *ngSwitchCase="'lettre'" class="section-layout">
+              <div class="section-stack">
+                <div class="section-heading">
+                  <p class="panel-kicker">Lettre à un confrère</p>
+                  <h2>Synthèse et orientation</h2>
+                  <span class="hint">Résumé clinique et demande précise au confrère.</span>
+                </div>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Destinataire</mat-label>
+                  <input matInput [(ngModel)]="letterDraft.recipient" placeholder="ex. Dr. Ben Salah, cardiologue" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Objet</mat-label>
+                  <input matInput [(ngModel)]="letterDraft.subject" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Résumé clinique</mat-label>
+                  <textarea matInput rows="6" [(ngModel)]="letterDraft.resume"></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Motif de la demande</mat-label>
+                  <textarea matInput rows="5" [(ngModel)]="letterDraft.request"></textarea>
+                </mat-form-field>
+
+                <div class="form-actions">
+                  <button type="button" class="primary-btn" [disabled]="generatingPdf" (click)="downloadDocumentPdf('lettre')">
+                    {{ generatingPdf ? 'Génération…' : 'Télécharger le PDF' }}
+                  </button>
+                </div>
+              </div>
+
+              <aside class="section-stack">
+                <article class="doc-preview">
+                  <header class="doc-preview__head">
+                    <span class="doc-preview__type">Lettre à un confrère</span>
+                    <span class="doc-preview__date">Le {{ todayLabel }}</span>
+                  </header>
+                  <p class="doc-preview__label">À l’attention de</p>
+                  <p class="doc-preview__patient">{{ letterDraft.recipient || 'Mon cher confrère' }}</p>
+                  <p class="doc-preview__text"><strong>Objet :</strong> {{ letterDraft.subject || '—' }}</p>
+                  <p class="doc-preview__label">Résumé clinique</p>
+                  <p class="doc-preview__text" [class.is-empty]="!letterDraft.resume">
+                    {{ letterDraft.resume || 'Le résumé clinique apparaîtra ici.' }}
+                  </p>
+                  <p class="doc-preview__label">Motif de la demande</p>
+                  <p class="doc-preview__text" [class.is-empty]="!letterDraft.request">
+                    {{ letterDraft.request || 'La demande apparaîtra ici.' }}
+                  </p>
+                  <footer class="doc-preview__sign">Signature et cachet</footer>
+                </article>
+              </aside>
+            </section>
+          </ng-container>
+        </div>
+
+        <ng-template #lockedTpl>
+          <div class="empty-state locked-state">
+            <h3>Sélectionne d’abord un patient</h3>
+            <p>Les boutons du haut se débloquent automatiquement une fois le dossier patient choisi.</p>
+          </div>
+        </ng-template>
+      </mat-card>
+    </div>
+  </div>
+</section>

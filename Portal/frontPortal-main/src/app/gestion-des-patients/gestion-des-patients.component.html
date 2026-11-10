@@ -1,0 +1,123 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <div class="portal-hero">
+      <div class="portal-hero__icon">
+        <mat-icon>groups</mat-icon>
+      </div>
+      <div>
+        <h1 class="portal-hero__title">Patients</h1>
+        <p class="portal-hero__subtitle">Retrouvez, ajoutez et mettez à jour les patients du cabinet.</p>
+      </div>
+    </div>
+
+    <div class="portal-card pt-card">
+      <div class="pt-toolbar">
+        <div class="pt-title">
+          <h2>Liste des patients</h2>
+          <span class="pt-count" *ngIf="!loading">{{ count }}</span>
+        </div>
+
+        <div class="pt-actions">
+          <label class="pt-search">
+            <mat-icon aria-hidden="true">search</mat-icon>
+            <input type="search" [(ngModel)]="search" (ngModelChange)="applyFilter()"
+                   placeholder="Nom, e-mail, téléphone ou CIN" aria-label="Rechercher un patient">
+            <button type="button" class="pt-search__clear" *ngIf="search" (click)="clearSearch()" aria-label="Effacer la recherche">
+              <mat-icon>close</mat-icon>
+            </button>
+          </label>
+          <button type="button" class="pm-btn pm-btn--primary" (click)="add()">
+            <mat-icon>person_add</mat-icon>Nouveau patient
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-table">
+        <table mat-table [dataSource]="dataSource" matSort matSortActive="patient" matSortDirection="asc">
+          <ng-container matColumnDef="patient">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Patient</th>
+            <td mat-cell *matCellDef="let patient">
+              <div class="pt-person">
+                <span class="pt-avatar">{{ initials(patient) }}</span>
+                <span class="pt-person__text">
+                  <strong>{{ patient.prenom }} {{ patient.nom }}</strong>
+                  <a *ngIf="patient.email" [href]="'mailto:' + patient.email">{{ patient.email }}</a>
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="infos">
+            <th mat-header-cell *matHeaderCellDef>Informations</th>
+            <td mat-cell *matCellDef="let patient" class="pt-muted">
+              <ng-container *ngIf="patient.sexe">{{ patient.sexe }}</ng-container>
+              <ng-container *ngIf="patient.sexe && age(patient) !== null"> · </ng-container>
+              <ng-container *ngIf="age(patient) !== null">{{ age(patient) }} ans</ng-container>
+              <ng-container *ngIf="!patient.sexe && age(patient) === null">—</ng-container>
+              <span class="pt-sub" *ngIf="patient.ville || patient.gouvernerat">{{ patient.ville || patient.gouvernerat }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="numtelephone">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Téléphone</th>
+            <td mat-cell *matCellDef="let patient">
+              <a *ngIf="patient.numtelephone; else noPhone" class="pt-phone" [href]="phoneLink(patient.numtelephone)">
+                <mat-icon>call</mat-icon>{{ patient.numtelephone }}
+              </a>
+              <ng-template #noPhone><span class="pt-muted">—</span></ng-template>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="creationDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Ajouté le</th>
+            <td mat-cell *matCellDef="let patient" class="pt-muted">
+              {{ patient.creationDate ? (patient.creationDate | date:'d MMM yyyy') : '—' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="pt-actions-head"><span class="cdk-visually-hidden">Actions</span></th>
+            <td mat-cell *matCellDef="let patient" class="pt-actions-cell">
+              <button type="button" class="pm-icon-btn" (click)="edit(patient)"
+                      matTooltip="Modifier" [attr.aria-label]="'Modifier ' + patient.prenom + ' ' + patient.nom">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button type="button" class="pm-icon-btn pm-icon-btn--danger" (click)="askDelete(patient)"
+                      matTooltip="Supprimer" [attr.aria-label]="'Supprimer ' + patient.prenom + ' ' + patient.nom">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (dblclick)="edit(row)"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell pt-empty" [attr.colspan]="displayedColumns.length">
+              <ng-container *ngIf="loading">Chargement des patients…</ng-container>
+              <ng-container *ngIf="!loading && search">Aucun patient ne correspond à « {{ search }} ».</ng-container>
+              <ng-container *ngIf="!loading && !search">Aucun patient pour le moment. Ajoutez le premier avec « Nouveau patient ».</ng-container>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" [hidePageSize]="count <= 10"
+                     aria-label="Pages de patients"></mat-paginator>
+    </div>
+  </div>
+</section>
+
+<p-dialog header="Supprimer le patient" [visible]="!!toDelete" (visibleChange)="$event ? null : (toDelete = null)"
+          [modal]="true" [draggable]="false" [resizable]="false" [style]="{width: '460px', maxWidth: '92vw'}" [baseZIndex]="10000">
+  <p class="pt-dialog-text" *ngIf="toDelete">
+    <strong>{{ toDelete.prenom }} {{ toDelete.nom }}</strong> sera retiré de la liste des patients. Cette action est définitive.
+  </p>
+  <div class="pm-dialog-actions">
+    <button type="button" class="pm-btn pm-btn--secondary" (click)="toDelete = null">Annuler</button>
+    <button type="button" class="pm-btn pm-btn--danger-solid" [disabled]="deleting" (click)="confirmDelete()">
+      {{ deleting ? 'Suppression…' : 'Supprimer' }}
+    </button>
+  </div>
+</p-dialog>

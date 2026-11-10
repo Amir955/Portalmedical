@@ -1,0 +1,118 @@
+<!-- Left sidebar: navigation -->
+<aside class="side" [class.is-open]="menuOpen" aria-label="Navigation principale">
+  <a class="side-brand" [routerLink]="['/tableau-de-bord']" (click)="closeMenu()" aria-label="PortalMedical, tableau de bord">
+    <span class="side-brand__mark"><img src="assets/img/favicon.svg" alt=""></span>
+    <span class="side-brand__name">Portal<span>Medical</span></span>
+  </a>
+
+  <nav class="side-nav">
+    <p class="side-nav__label">Cabinet</p>
+    <a class="side-link" [routerLink]="['/tableau-de-bord']" routerLinkActive="is-active" (click)="closeMenu()">
+      <mat-icon>space_dashboard</mat-icon><span>Tableau de bord</span>
+    </a>
+    <a class="side-link" [routerLink]="['/calender']" routerLinkActive="is-active" (click)="closeMenu()">
+      <mat-icon>calendar_month</mat-icon><span>Calendrier</span>
+    </a>
+    <a class="side-link" [routerLink]="['/listeRDV']" routerLinkActive="is-active" (click)="closeMenu()">
+      <mat-icon>inbox</mat-icon><span>Demandes</span>
+      <span class="side-link__count" *ngIf="pending.length">{{ pending.length > 99 ? '99+' : pending.length }}</span>
+    </a>
+    <a class="side-link" [routerLink]="['/gestiondespatients']" routerLinkActive="is-active" (click)="closeMenu()">
+      <mat-icon>groups</mat-icon><span>Patients</span>
+    </a>
+
+    <ng-container *ngIf="isDoctor">
+      <p class="side-nav__label">Médical</p>
+      <button type="button" class="side-link" [class.is-parent-active]="consultationActive"
+              [attr.aria-expanded]="consultationOpen" (click)="toggleConsultation()">
+        <mat-icon>medical_services</mat-icon><span>Consultation</span>
+        <mat-icon class="side-link__caret" [class.is-open]="consultationOpen">expand_more</mat-icon>
+      </button>
+      <div class="side-sub" *ngIf="consultationOpen">
+        <a *ngFor="let link of consultationLinks" class="side-sub__link" [routerLink]="[link.route]"
+           routerLinkActive="is-active" (click)="closeMenu()">{{ link.label }}</a>
+      </div>
+    </ng-container>
+  </nav>
+
+  <a class="side-link side-link--bottom" [routerLink]="['/profil']" routerLinkActive="is-active" (click)="closeMenu()">
+    <mat-icon>manage_accounts</mat-icon><span>Mon compte</span>
+  </a>
+</aside>
+
+<div class="side-backdrop" *ngIf="menuOpen" (click)="closeMenu()"></div>
+
+<!-- Top bar: notifications and account -->
+<header class="top">
+  <button type="button" class="top-burger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen" aria-label="Ouvrir le menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <a class="top-brand" [routerLink]="['/tableau-de-bord']" aria-label="PortalMedical">
+    <img src="assets/img/favicon.svg" alt=""><span>Portal<span>Medical</span></span>
+  </a>
+
+  <div class="top-end">
+    <button
+      mat-icon-button
+      class="notif-trigger"
+      [matMenuTriggerFor]="notifMenu"
+      [attr.aria-label]="unreadCount ? unreadCount + ' demande(s) non lue(s)' : 'Demandes de rendez-vous'">
+      <mat-icon>{{ unreadCount ? 'notifications_active' : 'notifications_none' }}</mat-icon>
+      <span class="notif-trigger__badge" *ngIf="unreadCount">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+    </button>
+    <mat-menu #notifMenu="matMenu" [overlapTrigger]="false" class="notif-menu-panel" xPosition="before">
+      <div class="notif-menu__head" (click)="$event.stopPropagation()">
+        <div>
+          <strong>Demandes de rendez-vous</strong>
+          <span>
+            {{ pending.length ? pending.length + ' en attente' : 'Aucune en attente' }}<ng-container *ngIf="unreadCount"> · {{ unreadCount }} non lue(s)</ng-container>
+          </span>
+        </div>
+        <button type="button" class="notif-menu__mark" *ngIf="unreadCount" (click)="markAllRead($event)">
+          Tout marquer comme lu
+        </button>
+      </div>
+      <button
+        mat-menu-item
+        *ngFor="let rdv of pending.slice(0, 5)"
+        class="notif-menu__item"
+        [class.is-unread]="isUnread(rdv)"
+        (click)="openRequest(rdv)">
+        <span class="notif-menu__dot" aria-hidden="true"></span>
+        <span class="notif-menu__text">
+          <span class="notif-menu__name">{{ requestName(rdv) }}</span>
+          <span class="notif-menu__when">Pour le {{ rdv.dateOfApt | date:'EEE d MMM à HH:mm' }}</span>
+        </span>
+      </button>
+      <button mat-menu-item class="notif-menu__all" (click)="openRequests()">
+        {{ pending.length > 5 ? 'Voir les ' + pending.length + ' demandes' : 'Ouvrir la liste des demandes' }}
+      </button>
+    </mat-menu>
+
+    <button type="button" class="top-user" [matMenuTriggerFor]="userMenu" aria-label="Ouvrir le menu du compte">
+      <span class="top-user__avatar">{{ getUserInitials() }}</span>
+      <span class="top-user__text">
+        <strong>{{ displayName || 'Mon compte' }}</strong>
+        <small *ngIf="roleLabel">{{ roleLabel }}</small>
+      </span>
+      <mat-icon class="top-user__caret">expand_more</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu" [overlapTrigger]="false" class="user-menu-panel" xPosition="before">
+      <div class="user-menu-panel__header">
+        <div class="user-menu-panel__avatar">{{ getUserInitials() }}</div>
+        <div class="user-menu-panel__identity">
+          <strong>{{ user?.prenom }} {{ user?.nom }}</strong>
+          <span>{{ user?.email }}</span>
+        </div>
+      </div>
+      <button mat-menu-item (click)="openProfile()">
+        <mat-icon>manage_accounts</mat-icon>
+        <span>Mon compte</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Se déconnecter</span>
+      </button>
+    </mat-menu>
+  </div>
+</header>

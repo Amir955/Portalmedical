@@ -1,0 +1,20 @@
+# Claude Code worktrees and local settings
+.claude/
+
+# Dependencies and build output
+node_modules/
+target/
+dist/
+
+# Local secrets (see Portal/backportal-main/src/main/resources/application.properties)
+application-local.properties
+.env
+
+# Logs
+*.log
+*.err
+
+# IDE
+.idea/
+.vscode/
+*.iml

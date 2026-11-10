@@ -1,0 +1,190 @@
+<app-navbar></app-navbar>
+
+<section class="portal-page">
+  <div class="portal-page__inner">
+    <div class="portal-hero">
+      <div class="portal-hero__icon">
+        <mat-icon>calendar_month</mat-icon>
+      </div>
+      <div>
+        <h1 class="portal-hero__title">Calendrier</h1>
+        <p class="portal-hero__subtitle">Vos rendez-vous confirmés. Cliquez sur un jour pour en ajouter un, sur un rendez-vous pour le modifier.</p>
+      </div>
+    </div>
+
+    <div class="portal-card cal-card">
+      <div class="cal-toolbar">
+        <div class="cal-stats">
+          <div class="cal-stat">
+            <span class="cal-stat__value">{{ todayCount }}</span>
+            <span class="cal-stat__label">aujourd’hui</span>
+          </div>
+          <div class="cal-stat">
+            <span class="cal-stat__value">{{ weekCount }}</span>
+            <span class="cal-stat__label">cette semaine</span>
+          </div>
+        </div>
+        <button type="button" class="pm-btn pm-btn--primary" (click)="openAdd()">
+          <mat-icon>add</mat-icon>Nouveau rendez-vous
+        </button>
+      </div>
+
+      <div class="cal-frame">
+        <full-calendar [options]="calendarOptions"></full-calendar>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- New appointment -->
+<p-dialog header="Nouveau rendez-vous" [(visible)]="addOpen" [modal]="true" [draggable]="false" [resizable]="false"
+          [style]="{width: '720px', maxWidth: '94vw'}" [baseZIndex]="10000" [blockScroll]="true">
+  <form [formGroup]="addForm" (ngSubmit)="submitAdd()" novalidate>
+    <div class="form-alert" role="alert" *ngIf="addError">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span><strong>Rendez-vous non ajouté</strong>{{ addError }}</span>
+    </div>
+
+    <p class="pm-form-group">Patient</p>
+    <div class="cal-switch" role="tablist" aria-label="Type de patient">
+      <button type="button" role="tab" [class.is-active]="patientMode === 'existing'"
+              [attr.aria-selected]="patientMode === 'existing'" (click)="setPatientMode('existing')">
+        <mat-icon>person_search</mat-icon>Patient existant
+      </button>
+      <button type="button" role="tab" [class.is-active]="patientMode === 'new'"
+              [attr.aria-selected]="patientMode === 'new'" (click)="setPatientMode('new')">
+        <mat-icon>person_add</mat-icon>Nouveau patient
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="pm-field" *ngIf="patientMode === 'existing'">
+      <mat-label>Choisir le patient</mat-label>
+      <mat-select formControlName="patientId">
+        <mat-option *ngFor="let patient of patients" [value]="patient.id">
+          {{ patient.nom }} {{ patient.prenom }}<span class="cal-option-hint" *ngIf="patient.email"> · {{ patient.email }}</span>
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="!patients.length">Aucun patient pour le moment : utilisez « Nouveau patient ».</mat-hint>
+    </mat-form-field>
+
+    <div class="pm-form-grid" *ngIf="patientMode === 'new'">
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom" autocomplete="off">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom" autocomplete="off">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Adresse e-mail</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="off" placeholder="nom@exemple.com">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Téléphone</mat-label>
+        <input matInput type="tel" formControlName="telephone" autocomplete="off">
+      </mat-form-field>
+    </div>
+
+    <p class="pm-form-group">Quand</p>
+    <div class="pm-form-grid">
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Médecin</mat-label>
+        <mat-select formControlName="doctorId">
+          <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">{{ doctorName(doctor) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pm-field">
+        <mat-label>Date</mat-label>
+        <input matInput type="date" formControlName="date">
+      </mat-form-field>
+    </div>
+
+    <div class="cal-slots" role="group" aria-label="Créneau">
+      <button type="button" *ngFor="let slot of slots" class="cal-slot"
+              [class.is-selected]="addForm.get('slot').value === slot"
+              [class.is-off]="isSlotDisabled(addForm, slot)"
+              [disabled]="isSlotDisabled(addForm, slot)"
+              [attr.title]="slotStatus(addForm, slot) || null"
+              (click)="pickSlot(addForm, slot)">
+        {{ slot }}
+      </button>
+    </div>
+
+    <div class="pm-dialog-actions">
+      <button type="button" class="pm-btn pm-btn--secondary" (click)="addOpen = false">Annuler</button>
+      <button type="submit" class="pm-btn pm-btn--primary" [disabled]="adding">
+        {{ adding ? 'Ajout…' : 'Ajouter le rendez-vous' }}
+      </button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Existing appointment -->
+<p-dialog header="Rendez-vous" [(visible)]="editOpen" [modal]="true" [draggable]="false" [resizable]="false"
+          [style]="{width: '720px', maxWidth: '94vw'}" [baseZIndex]="10000" [blockScroll]="true">
+  <ng-container *ngIf="editing">
+    <div class="cal-patient">
+      <div class="cal-patient__avatar">{{ patientName(editing).charAt(0) }}</div>
+      <div class="cal-patient__text">
+        <strong>{{ patientName(editing) }}</strong>
+        <span>
+          <a *ngIf="editing.patientEmail" [href]="'mailto:' + editing.patientEmail">{{ editing.patientEmail }}</a>
+          <ng-container *ngIf="patientPhone(editing)"> · <a [href]="'tel:' + patientPhone(editing)">{{ patientPhone(editing) }}</a></ng-container>
+        </span>
+      </div>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="submitEdit()" novalidate>
+      <div class="form-alert" role="alert" *ngIf="editError">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <span><strong>Action impossible</strong>{{ editError }}</span>
+      </div>
+
+      <p class="pm-form-group">Déplacer le rendez-vous</p>
+      <div class="pm-form-grid">
+        <mat-form-field appearance="outline" class="pm-field">
+          <mat-label>Médecin</mat-label>
+          <mat-select formControlName="doctorId">
+            <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">{{ doctorName(doctor) }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="pm-field">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" formControlName="date">
+        </mat-form-field>
+      </div>
+
+      <div class="cal-slots" role="group" aria-label="Créneau">
+        <button type="button" *ngFor="let slot of slots" class="cal-slot"
+                [class.is-selected]="editForm.get('slot').value === slot"
+                [class.is-off]="isSlotDisabled(editForm, slot)"
+                [disabled]="isSlotDisabled(editForm, slot)"
+                [attr.title]="slotStatus(editForm, slot) || null"
+                (click)="pickSlot(editForm, slot)">
+          {{ slot }}
+        </button>
+      </div>
+
+      <div class="pm-dialog-actions" *ngIf="!confirmCancel">
+        <button type="button" class="pm-btn pm-btn--danger pm-dialog-actions__start" (click)="confirmCancel = true">
+          <mat-icon>event_busy</mat-icon>Annuler le rendez-vous
+        </button>
+        <button type="button" class="pm-btn pm-btn--secondary" (click)="editOpen = false">Fermer</button>
+        <button type="submit" class="pm-btn pm-btn--primary" [disabled]="saving">
+          {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+        </button>
+      </div>
+
+      <div class="pm-dialog-actions cal-confirm" *ngIf="confirmCancel">
+        <span class="pm-dialog-actions__start cal-confirm__text">
+          Annuler ce rendez-vous ? Le patient sera prévenu par e-mail.
+        </span>
+        <button type="button" class="pm-btn pm-btn--secondary" (click)="confirmCancel = false">Non, garder</button>
+        <button type="button" class="pm-btn pm-btn--danger-solid" [disabled]="saving" (click)="cancelAppointment()">
+          {{ saving ? 'Annulation…' : 'Oui, annuler' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</p-dialog>

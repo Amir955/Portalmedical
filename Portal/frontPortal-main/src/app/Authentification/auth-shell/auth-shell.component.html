@@ -1,0 +1,42 @@
+<div class="auth-layout" [class.auth-layout--wide]="wide">
+  <aside class="auth-aside">
+    <span class="auth-aside__shape auth-aside__shape--ring" aria-hidden="true"></span>
+    <span class="auth-aside__shape auth-aside__shape--dot" aria-hidden="true"></span>
+
+    <a class="auth-brand" [routerLink]="['/']" aria-label="PortalMedical, retour à l'accueil">
+      <span class="auth-brand__mark"><img src="assets/img/favicon.svg" alt=""></span>
+      <span>
+        <span class="auth-brand__name">Portal<span>Medical</span></span>
+        <span class="auth-brand__tagline">Accessible. Sécurisé. Humain.</span>
+      </span>
+    </a>
+
+    <div class="auth-aside__body">
+      <p class="auth-aside__eyebrow">{{ eyebrow }}</p>
+      <h2 class="auth-aside__title">{{ heading }}</h2>
+      <p class="auth-aside__text">{{ text }}</p>
+
+      <ul class="auth-points">
+        <li *ngFor="let point of points">
+          <mat-icon aria-hidden="true">{{ point.icon }}</mat-icon>
+          {{ point.label }}
+        </li>
+      </ul>
+    </div>
+
+    <p class="auth-aside__footer">© {{ year }} PortalMedical</p>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-main__top">
+      <a class="auth-back" [routerLink]="['/']">
+        <mat-icon aria-hidden="true">arrow_back</mat-icon>
+        Retour à l'accueil
+      </a>
+    </div>
+
+    <div class="auth-main__content">
+      <ng-content></ng-content>
+    </div>
+  </main>
+</div>
