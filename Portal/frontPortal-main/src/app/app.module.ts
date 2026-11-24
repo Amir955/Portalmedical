@@ -53,8 +53,6 @@ import { RevealDirective } from './public/landing/reveal.directive';
 import { DemandeRendezVousComponent } from './public/demande-rendez-vous/demande-rendez-vous.component';
 import { CalenderComponent } from './cabinet/calender/calender.component';
 import {FullCalendarModule} from "@fullcalendar/angular";
-import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
-import interactionPlugin from '@fullcalendar/interaction';
 import {DialogModule} from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ConsultationComponent } from './medical/consultation/consultation.component';
@@ -76,10 +74,6 @@ import { StatsCabinetComponent } from './cabinet/stats-cabinet/stats-cabinet.com
 registerLocaleData(localeFr);
 
 
-FullCalendarModule.registerPlugins([ // register FullCalendar plugins
-  dayGridPlugin,
-  interactionPlugin
-]);
 
 @NgModule({
   declarations: [

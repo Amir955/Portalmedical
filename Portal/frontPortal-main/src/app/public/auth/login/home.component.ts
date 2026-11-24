@@ -75,7 +75,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.submitting = true;
-    this.authService.login(this.loginForm.value).subscribe(
+    this.authService.login(this.loginForm.getRawValue()).subscribe(
       res => {
         this.submitting = false;
         this.handleResponse(res);

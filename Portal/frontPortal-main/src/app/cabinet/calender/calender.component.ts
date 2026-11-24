@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CalendarOptions } from '@fullcalendar/angular';
+import { CalendarOptions } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Patient } from '../../../models/Patient';
@@ -404,6 +406,7 @@ export class CalenderComponent implements OnInit {
 
   private buildCalendarOptions(): CalendarOptions {
     return {
+      plugins: [dayGridPlugin, interactionPlugin],
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
