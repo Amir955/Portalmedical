@@ -41,9 +41,6 @@ import {MatDividerModule} from '@angular/material/divider';
 import { CertificatmedicalComponent } from './legacy/certificatmedical/certificatmedical.component';
 import { LettreAUnCofrereComponent } from './legacy/lettre-a-un-cofrere/lettre-a-un-cofrere.component';
 import { CertificatmedicalaptitudeComponent } from './legacy/certificatmedicalaptitude/certificatmedicalaptitude.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSquare, faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { LandingComponent } from './public/landing/landing.component';
 import { LandingHeaderComponent } from './public/landing/sections/landing-header/landing-header.component';
 import { LandingHeroComponent } from './public/landing/sections/landing-hero/landing-hero.component';
@@ -59,7 +56,7 @@ import {FullCalendarModule} from "@fullcalendar/angular";
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction';
 import {DialogModule} from 'primeng/dialog';
-import {ButtonModule} from "primeng";
+import { ButtonModule } from 'primeng/button';
 import { ConsultationComponent } from './medical/consultation/consultation.component';
 import { ListeRendezVousComponent } from './cabinet/liste-rendez-vous/liste-rendez-vous.component';
 import { NavbarComponent } from './core/layout/navbar/navbar.component';
@@ -164,7 +161,6 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     MatRadioModule,
     MatSelectModule,
     MatDividerModule,
-    FontAwesomeModule,
     FullCalendarModule,
     DialogModule,
     ButtonModule,
