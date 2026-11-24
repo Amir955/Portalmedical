@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { TokenService } from '../token.service';
 
@@ -7,7 +7,7 @@ import { TokenService } from '../token.service';
 @Injectable({
   providedIn: 'root'
 })
-export class DoctorGuard implements CanActivate {
+export class DoctorGuard  {
 
   constructor(private tokenService: TokenService,
               private toastr: ToastrService,
