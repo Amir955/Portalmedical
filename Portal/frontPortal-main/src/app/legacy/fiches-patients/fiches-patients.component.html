@@ -10,7 +10,7 @@
   </div>
 
   <div class="workspace">
-    <mat-card class="panel search-panel">
+    <mat-card appearance="outlined" class="panel search-panel">
       <div class="panel-head">
         <div>
           <p class="panel-kicker">Recherche patient</p>
@@ -51,7 +51,7 @@
     </mat-card>
 
     <div class="content-column">
-      <mat-card class="panel selected-panel" *ngIf="selectedPatient as patient; else noPatientTpl">
+      <mat-card appearance="outlined" class="panel selected-panel" *ngIf="selectedPatient as patient; else noPatientTpl">
         <p class="panel-kicker">Patient selectionne</p>
         <div class="selected-grid">
           <div>
@@ -68,14 +68,14 @@
       </mat-card>
 
       <ng-template #noPatientTpl>
-        <mat-card class="panel selected-panel muted">
+        <mat-card appearance="outlined" class="panel selected-panel muted">
           <p class="panel-kicker">Patient selectionne</p>
           <h2>Choisis un patient pour voir sa fiche</h2>
           <p>L'historique et le formulaire de consultation s'activeront ici.</p>
         </mat-card>
       </ng-template>
 
-      <mat-card class="panel history-panel" *ngIf="selectedPatient">
+      <mat-card appearance="outlined" class="panel history-panel" *ngIf="selectedPatient">
         <div class="panel-head">
           <div>
             <p class="panel-kicker">Historique</p>
@@ -110,7 +110,7 @@
         </ng-template>
       </mat-card>
 
-      <mat-card class="panel form-panel" *ngIf="selectedPatient">
+      <mat-card appearance="outlined" class="panel form-panel" *ngIf="selectedPatient">
         <div class="panel-head">
           <div>
             <p class="panel-kicker">Nouvelle fiche</p>

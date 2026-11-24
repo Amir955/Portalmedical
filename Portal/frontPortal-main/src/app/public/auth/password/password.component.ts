@@ -1,6 +1,6 @@
 import { Component, Inject, Optional } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AuthentificationService } from '../../../core/auth/authentification.service';
 
 /** "Mot de passe oublié" dialog opened from the login page. */

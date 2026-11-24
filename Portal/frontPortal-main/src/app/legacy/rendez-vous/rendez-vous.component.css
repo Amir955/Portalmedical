@@ -124,18 +124,22 @@ cursor: pointer;
 .card-header{
   background-color: var(--portal-primary);
 }
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 ::ng-deep .mat-focused .mat-form-field-label {
   color: white !important;
  }
  
+ /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
  ::ng-deep.mat-form-field-underline {
   background-color: white !important;
  } 
  
+ /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
  ::ng-deep.mat-form-field-ripple {
   background-color: white !important;;
  }
  
+ /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
  ::ng-deep .mat-form-field-label {
   color: white !important;
  }

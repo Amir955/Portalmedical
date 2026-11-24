@@ -34,7 +34,7 @@
   </div>
 
   <div class="workspace">
-    <mat-card class="panel search-panel">
+    <mat-card appearance="outlined" class="panel search-panel">
       <div class="panel-head">
         <div>
           <p class="panel-kicker">Recherche patient</p>
@@ -75,7 +75,7 @@
     </mat-card>
 
     <div class="content-column">
-      <mat-card class="panel context-panel" *ngIf="selectedPatient as patient; else noPatientTpl">
+      <mat-card appearance="outlined" class="panel context-panel" *ngIf="selectedPatient as patient; else noPatientTpl">
         <div class="panel-head">
           <div>
             <p class="panel-kicker">Patient actif</p>
@@ -97,14 +97,14 @@
       </mat-card>
 
       <ng-template #noPatientTpl>
-        <mat-card class="panel context-panel muted">
+        <mat-card appearance="outlined" class="panel context-panel muted">
           <p class="panel-kicker">Patient actif</p>
           <h2>Choisis d’abord un patient</h2>
           <p>Une fois sélectionné, tous les documents de consultation restent dans le même espace.</p>
         </mat-card>
       </ng-template>
 
-      <mat-card class="panel section-panel">
+      <mat-card appearance="outlined" class="panel section-panel">
         <div class="section-toolbar">
           <button
             type="button"

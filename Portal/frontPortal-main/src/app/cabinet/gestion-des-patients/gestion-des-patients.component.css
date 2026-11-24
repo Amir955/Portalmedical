@@ -106,12 +106,12 @@
   background: transparent;
 }
 
-.pt-table .mat-header-row {
+.pt-table .mat-mdc-header-row {
   height: 44px;
   background: var(--portal-background);
 }
 
-.pt-table .mat-header-cell {
+.pt-table .mat-mdc-header-cell {
   color: var(--portal-muted);
   font-size: var(--portal-text-xs);
   font-weight: 700;
@@ -120,27 +120,27 @@
   border-bottom-color: var(--portal-border);
 }
 
-.pt-table .mat-row {
+.pt-table .mat-mdc-row {
   height: 64px;
   transition: background-color 0.15s ease;
 }
 
-.pt-table .mat-row:hover {
+.pt-table .mat-mdc-row:hover {
   background: #f8fbfc;
 }
 
-.pt-table .mat-cell {
+.pt-table .mat-mdc-cell {
   color: var(--portal-text);
   font-size: var(--portal-text-sm);
   border-bottom-color: var(--portal-border);
 }
 
-.pt-table .mat-row:last-child .mat-cell {
+.pt-table .mat-mdc-row:last-child .mat-mdc-cell {
   border-bottom: 0;
 }
 
-.pt-table .mat-header-cell:first-of-type,
-.pt-table .mat-cell:first-of-type {
+.pt-table .mat-mdc-header-cell:first-of-type,
+.pt-table .mat-mdc-cell:first-of-type {
   padding-left: 1rem;
 }
 
@@ -238,7 +238,7 @@
   line-height: 1.7;
 }
 
-:host ::ng-deep .mat-paginator {
+:host ::ng-deep .mat-mdc-paginator {
   background: transparent;
   color: var(--portal-muted);
   font-family: var(--portal-font);
@@ -257,11 +257,11 @@
 }
 
 /* Rows open the patient's file */
-.pt-table .mat-row.pt-row-link {
+.pt-table .mat-mdc-row.pt-row-link {
   cursor: pointer;
 }
 
-.pt-table .mat-row.pt-row-link:focus-visible {
+.pt-table .mat-mdc-row.pt-row-link:focus-visible {
   outline: 2px solid var(--portal-accent);
   outline-offset: -2px;
 }
