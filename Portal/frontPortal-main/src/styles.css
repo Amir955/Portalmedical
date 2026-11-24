@@ -270,8 +270,8 @@ img {
   }
 }
 
-/* PrimeNG 9 dialogs (<p-dialog>) use the .ui-dialog classes */
-.ui-dialog.ui-widget {
+/* PrimeNG dialogs (<p-dialog>) use the .p-dialog classes */
+.p-dialog {
   border: 0;
   border-radius: 18px;
   overflow: hidden;
@@ -279,7 +279,7 @@ img {
   font-family: var(--portal-font);
 }
 
-.ui-dialog .ui-dialog-titlebar {
+.p-dialog .p-dialog-header {
   display: flex;
   align-items: center;
   padding: 1.1rem 1.4rem;
@@ -289,13 +289,13 @@ img {
   color: var(--portal-primary);
 }
 
-.ui-dialog .ui-dialog-title {
+.p-dialog .p-dialog-title {
   flex: 1;
   font-size: 1.15rem;
   font-weight: 800;
 }
 
-.ui-dialog .ui-dialog-titlebar-icon {
+.p-dialog .p-dialog-header-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -306,19 +306,19 @@ img {
   color: var(--portal-muted);
 }
 
-.ui-dialog .ui-dialog-titlebar-icon:hover {
+.p-dialog .p-dialog-header-icon:hover {
   background: var(--portal-background);
   color: var(--portal-primary);
 }
 
-.ui-dialog .ui-dialog-content {
+.p-dialog .p-dialog-content {
   padding: 1.25rem 1.4rem 1.4rem;
   border: 0;
   background: #ffffff;
   color: var(--portal-text);
 }
 
-.ui-dialog-mask.ui-widget-overlay {
+.p-dialog-mask.p-component-overlay {
   background: rgba(15, 30, 50, 0.45);
 }
 
