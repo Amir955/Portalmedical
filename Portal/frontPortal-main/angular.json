@@ -74,18 +74,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "PortalMedical:build"
+            "buildTarget": "PortalMedical:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "PortalMedical:build:production"
+              "buildTarget": "PortalMedical:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "PortalMedical:build"
+            "buildTarget": "PortalMedical:build"
           }
         },
         "test": {
