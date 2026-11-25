@@ -40,20 +40,17 @@
 .mat-form-field.mat-focused.mat-primary .mat-select-arrow {
   color: var(--portal-accent-strong) !important;
 }
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .mat-mdc-form-field.mat-focused .mat-form-field-ripple {
   background-color: var(--portal-accent);
 }
 /* Outline fields: only the border turns teal. The outline element covers the whole
    field, so giving it a background would fill the input. */
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
   color: var(--portal-accent);
 }
 .mat-mdc-input-element {
   caret-color: var(--portal-accent-strong);
 }
-/* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
 .mat-checkbox-checked.mat-accent .mat-checkbox-background,
 .mat-checkbox-checked.mat-primary .mat-checkbox-background,
 .mat-pseudo-checkbox-checked {
@@ -67,15 +64,12 @@
 .mat-radio-button.mat-primary .mat-radio-inner-circle {
   background-color: var(--portal-accent-strong) !important;
 }
-/* TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
 .mat-mdc-slide-toggle.mat-checked .mat-slide-toggle-thumb {
   background-color: var(--portal-accent-strong) !important;
 }
-/* TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
 .mat-mdc-slide-toggle.mat-checked .mat-slide-toggle-bar {
   background-color: var(--portal-accent-soft) !important;
 }
-/* TODO(mdc-migration): The following rule targets internal classes of progress-bar that may no longer apply for the MDC version. */
 .mat-tab-group.mat-primary .mat-ink-bar,
 .mat-tab-nav-bar.mat-primary .mat-ink-bar,
 .mat-progress-bar-fill::after,
@@ -83,7 +77,6 @@
   background-color: var(--portal-accent);
   stroke: var(--portal-accent);
 }
-/* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version. */
 .mat-mdc-button.mat-primary,
 .mat-mdc-outlined-button.mat-primary,
 .mat-icon.mat-primary,
@@ -132,7 +125,6 @@ body {
  * its components; that class beats the body rule above, so the brand font never showed.
  * Icon fonts (.mat-icon / .material-icons) are deliberately not listed.
  */
-/* TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
 body.mat-typography,
 .mat-typography h1, .mat-typography h2, .mat-typography h3,
 .mat-typography h4, .mat-typography h5, .mat-typography h6,
@@ -229,20 +221,17 @@ img {
   width: 100%;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .portal-search-field .mat-form-field-flex {
   border-radius: 14px !important;
   background: #f8fafc;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .portal-search-field .mat-form-field-outline-start,
 .portal-search-field .mat-form-field-outline-gap,
 .portal-search-field .mat-form-field-outline-end {
   border-color: rgba(31, 58, 95, 0.12) !important;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .portal-search-field.mat-focused .mat-form-field-outline-start,
 .portal-search-field.mat-focused .mat-form-field-outline-gap,
 .portal-search-field.mat-focused .mat-form-field-outline-end {
@@ -333,7 +322,6 @@ img {
   background: rgba(15, 30, 50, 0.45);
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .p-dialog .form-control,
 .p-dialog .mat-form-field-flex {
   border-radius: 14px;
@@ -398,20 +386,17 @@ img {
   width: 100%;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .portal-modal__field .mat-form-field-flex {
   border-radius: 14px !important;
   background: #f8fafc;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .portal-modal__field .mat-form-field-outline-start,
 .portal-modal__field .mat-form-field-outline-gap,
 .portal-modal__field .mat-form-field-outline-end {
   border-color: rgba(31, 58, 95, 0.12) !important;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .portal-modal__field.mat-focused .mat-form-field-outline-start,
 .portal-modal__field.mat-focused .mat-form-field-outline-gap,
 .portal-modal__field.mat-focused .mat-form-field-outline-end {
@@ -968,13 +953,11 @@ img {
   width: 100%;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .auth-field .mat-form-field-flex {
   border-radius: 12px !important;
   background: var(--portal-background);
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .auth-field .mat-form-field-infix,
 .auth-field .mat-input-element {
   background: transparent !important;
@@ -989,21 +972,18 @@ img {
   caret-color: var(--portal-primary) !important;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .auth-field .mat-form-field-outline-start,
 .auth-field .mat-form-field-outline-gap,
 .auth-field .mat-form-field-outline-end {
   border-color: var(--portal-border) !important;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .auth-field.mat-focused .mat-form-field-outline-start,
 .auth-field.mat-focused .mat-form-field-outline-gap,
 .auth-field.mat-focused .mat-form-field-outline-end {
   border-color: var(--portal-accent) !important;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
 .auth-field .mat-form-field-prefix .mat-icon {
   margin-right: 0.5rem;
   color: var(--portal-muted);
@@ -1816,6 +1796,15 @@ img {
   box-shadow: none;
 }
 
+.mat-datepicker-dialog .mat-datepicker-content-touch .mat-datepicker-content-container {
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  max-width: 90vw;
+  max-height: none;
+}
+
 .mat-datepicker-dialog .mat-calendar-table {
   width: 100%;
   table-layout: fixed;
@@ -1828,4 +1817,52 @@ img {
   min-height: 0;
   max-height: none;
   padding-bottom: 0.5rem;
+}
+
+/* Angular Material 17 (MDC) theming through its style variables:
+   soft rounded fields, portal colours, accent colour on focus. */
+html {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-outline-color: var(--portal-border);
+  --mdc-outlined-text-field-hover-outline-color: #b9c6d4;
+  --mdc-outlined-text-field-focus-outline-color: var(--portal-accent);
+  --mdc-outlined-text-field-focus-label-text-color: var(--portal-accent-strong);
+  --mdc-outlined-text-field-caret-color: var(--portal-accent-strong);
+  --mdc-filled-text-field-container-color: var(--portal-background);
+  --mdc-filled-text-field-focus-active-indicator-color: var(--portal-accent);
+  --mdc-filled-text-field-focus-label-text-color: var(--portal-accent-strong);
+  --mdc-filled-text-field-caret-color: var(--portal-accent-strong);
+  --mdc-filled-text-field-container-shape: 12px;
+  --mdc-checkbox-selected-icon-color: var(--portal-accent-strong);
+  --mdc-checkbox-selected-focus-icon-color: var(--portal-accent-strong);
+  --mdc-checkbox-selected-hover-icon-color: var(--portal-accent-strong);
+  --mdc-radio-selected-icon-color: var(--portal-accent-strong);
+  --mdc-radio-selected-focus-icon-color: var(--portal-accent-strong);
+  --mdc-radio-selected-hover-icon-color: var(--portal-accent-strong);
+  --mat-option-selected-state-label-text-color: var(--portal-accent-strong);
+  --mat-select-focused-arrow-color: var(--portal-accent-strong);
+}
+
+/* Fields with a soft background (login pages, search, dialogs) */
+.auth-field .mdc-text-field--outlined,
+.portal-search-field .mdc-text-field--outlined,
+.portal-modal__field .mdc-text-field--outlined,
+.p-dialog .mdc-text-field--outlined {
+  border-radius: 12px;
+  background: var(--portal-background);
+}
+
+.auth-field.mat-focused .mdc-text-field--outlined,
+.portal-search-field.mat-focused .mdc-text-field--outlined,
+.portal-modal__field.mat-focused .mdc-text-field--outlined {
+  background: #ffffff;
+}
+
+.auth-field .mat-mdc-form-field-icon-prefix > .mat-icon {
+  padding: 0 0.5rem 0 0.75rem;
+  color: var(--portal-muted);
+}
+
+.auth-field.mat-focused .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: var(--portal-accent-strong);
 }
